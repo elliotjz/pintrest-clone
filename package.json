@@ -1,7 +1,7 @@
 {
-  "name": "heroku-cra-node",
+  "name": "pintrest-clone",
   "version": "1.0.0",
-  "description": "How to use create-react-app with a custom Node API on Heroku",
+  "description": "freeCodeCamp backend project - Build A Pintrest Clone",
   "engines": {
     "node": "6.11.x"
   },
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mars/heroku-cra-node.git"
+    "url": "https://github.com/elliotjz/pintrest-clone.git"
   },
   "keywords": [
     "node",
