@@ -1,3 +1,5 @@
+'user strict'
+
 const express = require('express')
 const path = require('path')
 
@@ -7,11 +9,11 @@ const app = express()
 
 
 // Priority serve any static files.
-app.use(express.static(path.resolve(__dirname, '../client/build')))
+app.use(express.static(path.resolve(__dirname, 'client/build')))
 
 // Send requests to the react app
 app.get('*', function(request, response) {
-  response.sendFile(path.resolve(__dirname, '../client/build', 'index.html'))
+  response.sendFile(path.resolve(__dirname, './client/build', 'index.html'))
 })
 
 
