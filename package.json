@@ -7,14 +7,19 @@
   },
   "scripts": {
     "start": "node server",
-    "heroku-postbuild": "cd react-ui/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+    "heroku-postbuild": "cd server/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
   },
   "cacheDirectories": [
     "node_modules",
-    "react-ui/node_modules"
+    "server/node_modules"
   ],
   "dependencies": {
-    "express": "^4.14.1"
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.1",
+    "express-session": "^1.15.5",
+    "mongoose": "^4.11.9",
+    "passport": "^0.4.0",
+    "passport-twitter": "^1.0.4"
   },
   "repository": {
     "type": "git",
