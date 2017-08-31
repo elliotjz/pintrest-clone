@@ -12,22 +12,22 @@ class Menu extends React.Component {
 		super(props);
 		this.state = {
 			wideScreen: false,
-			open: false
+			open: false,
+			auth: false
 		}
 
 		this.handleClose = this.handleClose.bind(this)
 	}
 
 	isWideScreen() {
-    return document.documentElement.clientWidth > 830
+    return document.documentElement.clientWidth > 700
   }
 
   getMenuItems() {
-		return this.props.auth ?
+		return this.state.auth ?
 			[
 				{url: '/', text: 'All'},
 				{url: '/mypins', text: 'My Pins'},
-				{url: '/settings', text: 'Settings'},
 				{url: '/logout', text: 'Logout'}
 			] :
 			[
@@ -40,6 +40,12 @@ class Menu extends React.Component {
 	handleClose() {
 		this.setState({
 			open: false
+		})
+	}
+
+	componentWillMount() {
+		this.setState({
+			auth: !!localStorage.getItem('token')
 		})
 	}
 

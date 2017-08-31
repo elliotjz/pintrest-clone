@@ -7,7 +7,7 @@ const Header = () => (
   <div>
     <AppBar
       title='Pintrest Clone'
-      iconElementRight={<Menu />}
+      iconElementRight={<Menu/>}
       showMenuIconButton={false}
       id='app-bar'
     />

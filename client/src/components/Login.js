@@ -1,6 +1,6 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import RaisedButton from 'material-ui/RaisedButton'
+import PropTypes from 'prop-types'
 
 class Login extends React.Component {
 
@@ -8,9 +8,34 @@ class Login extends React.Component {
     return (
       <div>
         <h1>Login</h1>
+        <form onSubmit={this.props.twitterLogin}>
+        	<RaisedButton
+            label='Login with Twitter'
+            type='submit'
+            primary
+            className='login-btn'
+          />
+        </form>
+
+        <form onSubmit={this.props.googleLogin}>
+          <RaisedButton
+            label='Login with Google'
+            type='submit'
+            primary
+            className='login-btn'
+          />
+        </form>
+
+        {this.props.errorMessage && <p style={{color: 'red'}}>Error: {this.props.errorMessage}</p>}
       </div>
     )
   }
 }
 
+Login.PropTypes = {
+	loginBtnAction: PropTypes.func.isRequired,
+}
+
 export default Login
+
+

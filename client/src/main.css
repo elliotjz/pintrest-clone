@@ -8,3 +8,7 @@ body {
 #app-bar {
 	text-align: left;
 }
+
+.login-btn {
+	margin: 5px;
+}

@@ -1,6 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import RaisedButton from 'material-ui/RaisedButton'
 
 class Register extends React.Component {
 
