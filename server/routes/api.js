@@ -47,8 +47,32 @@ module.exports = function(app) {
 
 	app.post('/api/newpin', (req, res) => {
 
-		res.status(200).json({
-			success: true
-		})
-	})
+		UserModel.findOne({ id: req.body.id }, (err, user) => {
+			if (err) throw err
+			if (!user) {
+				res.status(400).json({
+					success: false,
+					message: 'Couldn\'t find user in database'
+				})
+			}
+
+			let pin = {
+				url: req.body.url,
+				description: req.body.description,
+				likes: []
+			}
+			user.pins.push(pin)
+			user.save((err) => {
+				if (err) throw err
+			})
+
+			res.status(200).json({
+				success: true
+			})
+		}) // End UserModel.findOne
+	}) // End /api/newpin
 }
+
+
+
+

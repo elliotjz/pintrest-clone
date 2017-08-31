@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const UserSchema = new mongoose.Schema({
   id: String,
   name: String,
-  pins: Object
+  pins: Array
 })
 
 module.exports = mongoose.model('User', UserSchema)

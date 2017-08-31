@@ -26,11 +26,10 @@ class MyPins extends React.Component {
 	processForm(event) {
 		event.preventDefault()
 
-		const pinData = {
-			id: localStorage.getItem('id'),
-			url: this.state.url,
-			description: this.state.description
-		}
+		const id = localStorage.getItem('id')
+		const url = this.state.url
+		const description = this.state.description
+		const pinData = `id=${id}&url=${url}&description=${description}`
 
 		const xhr = new XMLHttpRequest();
     xhr.open('post', '/api/newpin');
