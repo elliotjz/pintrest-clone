@@ -1,73 +1,27 @@
 import React from 'react'
 import NewPinCard from './NewPinCard'
-import NewPinForm from './NewPinForm'
+import Pin from './Pin'
 
-class MyPins extends React.Component {
+const MyPins =({
+	pinList,
+	openNewPinForm
+}) => (
+  <div>
+    <NewPinCard open={openNewPinForm}/>
+    {pinList && pinList.length !== 0 ?
+      pinList.map( (item, index) => {
+        return <Pin key={index} pinData={item} />
+      }) :
+      (
+        null
+      )
+    }
+    
+  </div>
+)
 
-	constructor(props) {
-		super(props);
-		this.state = {
-			newPinFormOpen: false,
-			url: '',
-			description: ''
-		}
-
-		this.openNewPinForm = this.openNewPinForm.bind(this)
-		this.processForm = this.processForm.bind(this)
-		this.formChange = this.formChange.bind(this)
-	}
-
-	openNewPinForm() {
-		this.setState({
-			newPinFormOpen: true
-		})
-	}
-
-	processForm(event) {
-		event.preventDefault()
-
-		const id = localStorage.getItem('id')
-		const url = this.state.url
-		const description = this.state.description
-		const pinData = `id=${id}&url=${url}&description=${description}`
-
-		const xhr = new XMLHttpRequest();
-    xhr.open('post', '/api/newpin');
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-    xhr.responseType = 'json';
-    xhr.addEventListener('load', () => {
-      if (xhr.status === 200) {
-      	console.log('200!!!')
-        
-      }
-    })
-    xhr.send(pinData);
-	}
-
-	formChange(event) {
-		const name = event.target.name
-		
-		this.setState({
-			[name]: event.target.value
-		})
-	}
-
-  render() {
-    return (
-      <div>
-        <h1>My Pins</h1>
-        <NewPinCard open={this.openNewPinForm}/>
-        {this.state.newPinFormOpen &&
-        	<NewPinForm 
-        		onSubmit={this.processForm}
-        		onChange={this.formChange}
-        		url={this.state.url}
-        		description={this.state.description}
-        	/>
-        }
-      </div>
-    )
-  }
-}
 
 export default MyPins
+
+
+

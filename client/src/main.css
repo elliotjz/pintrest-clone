@@ -33,3 +33,10 @@ body {
   margin-left: -150px;
   z-index: 101;
 } 
+
+.pin {
+  width: 300px;
+  padding: 3px;
+  margin: 5px auto;
+  min-height: 100px;
+}

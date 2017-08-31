@@ -3,11 +3,6 @@ const User = require('mongoose').model('User')
 
 
 module.exports = function(app) {
-	app.get('/api/data', (req, res) => {
-		res.json({
-			data: 'Message from API!'
-		})
-	})
 
 	app.post('/api/createuser', (req, res) => {
 
@@ -37,29 +32,83 @@ module.exports = function(app) {
 		})
 	})
 
-	app.get('/api/allPins', (req, res) => {
-		// GET ALL PINS
+
+	app.get('/api/allpins', (req, res) => {
+		UserModel.find({}, (err, users) => {
+			if (err) throw err
+			if (!users) {
+				return res.status(200).json({
+					pins: []
+				})
+			}
+
+			let pins = []
+			users.forEach((user) => {
+				if (user.pins.length > 0) {
+					user.pins.forEach((pin) => {
+						pins.push(pin)
+					})
+				}
+			})
+
+			pins.sort((a, b) => {
+				return b.timeStamp - a.timeStamp
+			})
+
+			return res.status(200).json({
+				success: true,
+				pins
+			})
+		})
 	})
 
-	app.get('/api/myPins', (req, res) => {
-		// GET USER PINS
+
+	app.get('/api/mypins', (req, res) => {
+
+		UserModel.findOne({ id: req.headers.id }, (err, user) => {
+			if (err) throw err
+			if (!user) {
+				return res.status(200).json({
+					success: false,
+					errorMessage: 'Couldn\'t find user in database'
+				})
+			}
+
+			let pins = []
+			if (user.pins && user.pins.length > 0) {
+				user.pins.forEach((pin) => {
+					pins.push(pin)
+				})
+			}
+
+			pins.sort((a, b) => {
+				return b.timeStamp - a.timeStamp
+			})
+			
+			return res.status(200).json({
+				success: true,
+				pins
+			})
+
+		})
 	})
 
 	app.post('/api/newpin', (req, res) => {
-
+		
 		UserModel.findOne({ id: req.body.id }, (err, user) => {
 			if (err) throw err
 			if (!user) {
-				res.status(400).json({
+				res.status(200).json({
 					success: false,
-					message: 'Couldn\'t find user in database'
+					errorMessage: 'Couldn\'t find user in database'
 				})
 			}
 
 			let pin = {
 				url: req.body.url,
 				description: req.body.description,
-				likes: []
+				likes: [],
+				timeStamp: Date.now()
 			}
 			user.pins.push(pin)
 			user.save((err) => {
@@ -70,6 +119,7 @@ module.exports = function(app) {
 				success: true
 			})
 		}) // End UserModel.findOne
+		
 	}) // End /api/newpin
 }
 

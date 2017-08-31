@@ -70,6 +70,7 @@ class Auth {
 		firebase.auth().signOut().then(function() {
 
 		  localStorage.removeItem('token')
+		  localStorage.removeItem('id')
 		  callback()
 
 		}).catch(function(error) {
