@@ -20,7 +20,7 @@ class Menu extends React.Component {
 	}
 
 	isWideScreen() {
-    return document.documentElement.clientWidth > 700
+    return document.documentElement.clientWidth > 450
   }
 
   getMenuItems() {
@@ -33,7 +33,6 @@ class Menu extends React.Component {
 			[
 				{url: '/', text: 'All'},
 				{url: '/login', text: 'Login'},
-				{url: '/register', text: 'Register'},
 			]
 	}
 

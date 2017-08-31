@@ -9,15 +9,46 @@ module.exports = function(app) {
 		})
 	})
 
-	app.post('api/createUser', (req, res) => {
-		// REGISTER USER
+	app.post('/api/createuser', (req, res) => {
+
+		const userData = {
+			id: req.body.id,
+			name: name = req.body.name,
+			pins: []
+		}
+
+		UserModel.findOne({ id: userData.id }, (err, data) => {
+			if (err) throw err
+
+			if (data) {
+				if (data.name !== userData.name) {
+					// CHANGE NAME ON DB
+				}
+			} else {
+				// No user with this ID, so create user.
+				const newUser = new User(userData)
+				newUser.save((err) => {
+					if (err) throw err
+				})
+			}
+			res.json({
+				success: true
+			})
+		})
 	})
 
-	app.get('api/allPins', (req, res) => {
+	app.get('/api/allPins', (req, res) => {
 		// GET ALL PINS
 	})
 
-	app.get('api/myPins', (req, res) => {
+	app.get('/api/myPins', (req, res) => {
 		// GET USER PINS
+	})
+
+	app.post('/api/newpin', (req, res) => {
+
+		res.status(200).json({
+			success: true
+		})
 	})
 }

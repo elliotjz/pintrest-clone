@@ -2,7 +2,6 @@ import React from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import AllPinsPage from './containers/AllPinsPage'
 import MyPinsPage from './containers/MyPinsPage'
-import RegisterPage from './containers/RegisterPage'
 import Logout from './components/Logout'
 import LoginPage from './containers/LoginPage'
 
@@ -12,7 +11,6 @@ const Main = () => (
 		<Switch>
 			<Route exact path='/' component={AllPinsPage} />
 			<Route exact path='/mypins' component={MyPinsPage} />
-			<Route exact path='/register' component={RegisterPage} />
 			<Route exact path='/logout' render={() => {
 				return !!localStorage.getItem('token') ?
 				(
