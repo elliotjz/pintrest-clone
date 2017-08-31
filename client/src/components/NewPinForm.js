@@ -7,7 +7,8 @@ import TextField from 'material-ui/TextField';
 const NewPinForm = ({
   onSubmit,
   onChange,
-  formData
+  url,
+  description
 }) => (
   <div id='screen'>
   	<Card id='new-pin-form'>
@@ -17,13 +18,13 @@ const NewPinForm = ({
           floatingLabelText="Picture URL"
           name="url"
           onChange={onChange}
-          value={formData.url}
+          value={url}
         />
         <TextField
           floatingLabelText="Description"
           name="description"
           onChange={onChange}
-          value={formData.description}
+          value={description}
         />
         <RaisedButton label='Create' type='submit' />
       </form>

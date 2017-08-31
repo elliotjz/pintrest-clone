@@ -8,10 +8,8 @@ class MyPins extends React.Component {
 		super(props);
 		this.state = {
 			newPinFormOpen: false,
-			formData: {
-				url: '',
-				description: ''
-			}
+			url: '',
+			description: ''
 		}
 
 		this.openNewPinForm = this.openNewPinForm.bind(this)
@@ -30,8 +28,8 @@ class MyPins extends React.Component {
 
 		const pinData = {
 			id: localStorage.getItem('id'),
-			url: this.state.formData.url,
-			description: this.state.formData.description
+			url: this.state.url,
+			description: this.state.description
 		}
 
 		const xhr = new XMLHttpRequest();
@@ -48,12 +46,10 @@ class MyPins extends React.Component {
 	}
 
 	formChange(event) {
-		const field = event.target.name
-		let formData = this.state.formData
-		formData[field] = event.target.value
-
+		const name = event.target.name
+		
 		this.setState({
-			formData
+			[name]: event.target.value
 		})
 	}
 
@@ -66,7 +62,8 @@ class MyPins extends React.Component {
         	<NewPinForm 
         		onSubmit={this.processForm}
         		onChange={this.formChange}
-        		formData={this.state.formData}
+        		url={this.state.url}
+        		description={this.state.description}
         	/>
         }
       </div>
