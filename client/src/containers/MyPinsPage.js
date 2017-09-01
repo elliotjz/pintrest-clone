@@ -174,7 +174,7 @@ class MyPinsPage extends React.Component {
 	render() {
 		return this.state.firebaseUser ?
 			(
-				<div>
+				<div className='page'>
 					<h1>My Pins</h1>
 
 					<div>

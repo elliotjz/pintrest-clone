@@ -47,11 +47,13 @@ class LoginPage extends React.Component {
 
 	render() {
 		return (
-			<Login
-				googleLogin={this.googleLogin}
-				twitterLogin={this.twitterLogin}
-				errorMessage={this.state.errorMessage}
-			/>
+			<div className='page'>
+				<Login
+					googleLogin={this.googleLogin}
+					twitterLogin={this.twitterLogin}
+					errorMessage={this.state.errorMessage}
+				/>
+			</div>
 		)
 	}
 }

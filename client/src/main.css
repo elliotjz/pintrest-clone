@@ -3,17 +3,27 @@ body {
   padding: 0;
   font-family: sans-serif;
   text-align: center;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f2f8fc
 }
 
 #app-bar {
 	text-align: left;
 }
 
+#flat-menu-container {
+  display: flex;
+}
+
+.menu-btn {
+  margin-top: 5px;
+}
+
 .login-btn {
 	margin: 5px;
 }
 
-.all-pins {
+.page {
   padding-top: 15px;
 }
 

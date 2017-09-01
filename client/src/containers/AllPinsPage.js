@@ -84,7 +84,7 @@ class AllPinsPage extends React.Component {
 
 	render() {
 		return (
-			<div className='all-pins'>
+			<div className='page'>
 				{!this.state.filterUser &&
 					<h1>All Pins</h1>
 				}

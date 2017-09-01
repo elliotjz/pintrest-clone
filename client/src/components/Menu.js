@@ -64,8 +64,10 @@ class Menu extends React.Component {
 			<div id='flat-menu-container'>
 				{menuItems.map( (item, index) => {
 					return (
-						<Link to={item.url} key={index}>
-							<FlatButton label={item.text} />
+						<Link to={item.url} key={index} >
+							<div className='menu-btn'>
+								<FlatButton label={item.text} />
+							</div>
 						</Link>
 					)
 				})}
