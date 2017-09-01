@@ -21,23 +21,4 @@ module.exports = function(app, passport) {
     	res.json(req.user)
 	  }
 	})
-
-	/*
-	app.get("/auth/twitter/callback", function(req, res, next){
-	  authenticateNewUser(req, res, next)
-	}, function(req, res){
-	  newUser = {
-	    id: req.user._json.id_str,
-	    name: req.user.displayName,
-	  }
-	  UserModel.findOne({ id: newUser.id }, function(err, data) {
-	    if (err) throw err
-	    if (!data) {
-	      let newUserDoc = UserModel(newUser).save(function(err, data) {
-	        if (err) throw err
-	      })
-	    }
-	    res.redirect('/')
-	  })
-	})*/
 }

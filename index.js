@@ -10,39 +10,9 @@ const bodyParser = require('body-parser')
 
 const authRoutes = require('./server/routes/auth')
 const apiRoutes = require('./server/routes/api')
-const env = require('./env')
 
 //Connect to DB
-require('./server/models').connect(env.MLAB_URL || process.env.MLAB_URL)
-
-
-
-
-/*
-
-// ------ PASSPORT SETUP -------
-
-// Configure passport Strategy
-passport.use(new Strategy({
-    consumerKey: env.CONSUMER_KEY || process.env.CONSUMER_KEY,
-    consumerSecret: env.CONSUMER_SECRET || process.env.CONSUMER_SECRET,
-    callbackURL: "http://127.0.0.1:3000/auth/twitter/callback"
-  },
-  function(token, tokenSecret, profile, cb){
-      cb(null, profile)
-  }   
-))
-
-// Configure Passport authenticated session persistence.
-passport.serializeUser(function(user, cb) {
-  cb(null, user);
-});
-
-passport.deserializeUser(function(obj, cb) {
-  cb(null, obj);
-});
-
-*/
+require('./server/models').connect(process.env.MLAB_URL)
 
 
 
@@ -54,22 +24,9 @@ app.use(express.static(path.resolve(__dirname, 'client/build')))
 
 
 
-
-
 // -------- MIDDLEWARE ----------
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }))
-/*app.use(session({
-  secret: env.SESSION_SECRET || process.env.SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true
-}))*/
-
-// Initialize Passport
-//app.use(passport.initialize());
-//app.use(passport.session());
-
-
 
 
 
@@ -81,7 +38,6 @@ apiRoutes(app)
 app.get('*', function(request, response) {
   response.sendFile(path.resolve(__dirname, './client/build', 'index.html'))
 })
-
 
 
 
