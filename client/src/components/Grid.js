@@ -59,6 +59,7 @@ class Grid extends React.Component {
 												deleteBtn={this.props.deleteBtn}
 												likeBtn={this.props.likeBtn}
 												userLoggedIn={this.props.userLoggedIn}
+												filterUser={this.props.filterUser}
 											/>
 										})
 									}

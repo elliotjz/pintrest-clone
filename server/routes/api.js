@@ -108,7 +108,8 @@ module.exports = function(app) {
 				description: req.body.description,
 				likes: [],
 				timeStamp: Date.now(),
-				userImg: user.img
+				userImg: user.img,
+				userId: user.id
 			}
 			user.pins.push(pin)
 			user.save((err) => {

@@ -1,7 +1,8 @@
 import React from 'react'
-import MyPins from '../components/MyPins'
+import RaisedButton from 'material-ui/RaisedButton'
 import NewPinForm from '../components/NewPinForm'
-import CircularProgress from 'material-ui/CircularProgress';
+import Grid from '../components/Grid'
+import CircularProgress from 'material-ui/CircularProgress'
 import Helpers from '../helpers/Helpers'
 import Auth from '../config/Auth'
 
@@ -156,12 +157,30 @@ class MyPinsPage extends React.Component {
 		})
 
 		this.getUserPins()
+
+		window.onkeyup = (e) => {
+		  var key = e.keyCode ? e.keyCode : e.which;
+		  if (key === 27) {
+		  	this.setState({
+		  		newPinFormOpen: false,
+					url: '',
+					description: ''
+		  	})
+		  }
+		}
 	}
 
 	render() {
 		return (
 			<div>
 				<h1>My Pins</h1>
+
+				<RaisedButton
+					label='New Pin'
+					onClick={this.openNewPinForm}
+					primary
+				/>
+				
 				{this.state.loading &&
 					<CircularProgress size={40} thickness={4} />
 				}
@@ -170,13 +189,17 @@ class MyPinsPage extends React.Component {
 					<p style={{color: 'red'}}>{this.state.errorMessage}</p>
 				}
 
-				<MyPins
-					pinList={this.state.pins}
-					openNewPinForm={this.openNewPinForm}
-					deleteBtn={this.deletePin}
-					likeBtn={this.likeBtn}
-					userLoggedIn={!!this.state.firebaseUser}
-				/>
+				{this.state.pins && this.state.pins.length !== 0 ?
+		      <Grid
+		        pinList={this.state.pins}
+		        deleteBtn={this.deletePin}
+		        likeBtn={this.likeBtn}
+		        userLoggedIn={!!this.state.firebaseUser}
+		      /> :
+		      (
+		        null
+		      )
+		    }
 
 				{this.state.newPinFormOpen &&
 		    	<NewPinForm 

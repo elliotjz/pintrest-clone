@@ -15,11 +15,15 @@ const Pin = ({
 	pinData,
 	deleteBtn,
 	likeBtn,
-	userLoggedIn
+	userLoggedIn,
+	filterUser
 }) => (
 	<Card className='tile' style={style}>
 		<CardMedia>
-      <img src={pinData.url} alt={pinData.description} />
+      <img
+      	src={pinData.url}
+      	alt={pinData.description}
+      />
     </CardMedia>
 
     <div className='pin-description'>
@@ -29,22 +33,29 @@ const Pin = ({
 				{pinData.description}
 			</CardText>
 		</div>
-		{userLoggedIn &&
-			<div className='pin-actions'>
-				<img src={pinData.userImg} alt='user thumbnail'/>
-				{deleteBtn &&
-					<IconButton
-						touch={true}
-						onClick={() => {
-							deleteBtn(pinData.timeStamp)
-						}}
-					>
-			      <Delete
-			      	color={red300}
-			      	hoverColor={red500}
-			      />
-			    </IconButton>
-			  }
+		<div className='pin-actions'>
+			<img
+				src={pinData.userImg}
+				alt='user thumbnail'
+				onClick={() => {
+      		filterUser(pinData.userId)
+      	}}
+			/>
+
+			{deleteBtn &&
+				<IconButton
+					touch={true}
+					onClick={() => {
+						deleteBtn(pinData.timeStamp)
+					}}
+				>
+		      <Delete
+		      	color={red300}
+		      	hoverColor={red500}
+		      />
+		    </IconButton>
+		  }
+		  {userLoggedIn &&
 		    <div className='like-container'>
 			    <IconButton
 						touch={true}
@@ -64,8 +75,8 @@ const Pin = ({
 					</IconButton>
 					<p>{pinData.likes.length}</p>
 				</div>
-			</div>
-		}
+			}
+		</div>
 	</Card>
 )
 

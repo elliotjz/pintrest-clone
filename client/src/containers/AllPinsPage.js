@@ -1,8 +1,10 @@
 import React from 'react'
-import AllPins from '../components/AllPins'
-import CircularProgress from 'material-ui/CircularProgress';
+import Grid from '../components/Grid'
+import CircularProgress from 'material-ui/CircularProgress'
+import RaisedButton from 'material-ui/RaisedButton'
 import Helpers from '../helpers/Helpers'
 import Auth from '../config/Auth'
+
 
 class AllPinsPage extends React.Component {
 
@@ -12,10 +14,13 @@ class AllPinsPage extends React.Component {
 			pins: null,
 			loading: true,
 			errorMessage: null,
-			firebaseUser: null
+			firebaseUser: null,
+			filterUser: null
 		}
 
 		this.likeBtn = this.likeBtn.bind(this)
+		this.applyUserFilter = this.applyUserFilter.bind(this)
+		this.backToAll = this.backToAll.bind(this)
 	}
 
 	likeBtn(timeStamp) {
@@ -35,6 +40,18 @@ class AllPinsPage extends React.Component {
 			pins
 		})
 		Helpers.addLike(timeStamp)
+	}
+
+	applyUserFilter(id) {
+		this.setState({
+			filterUser: id
+		})
+	}
+
+	backToAll() {
+		this.setState({
+			filterUser: null
+		})
 	}
 
 	componentDidMount() {
@@ -67,19 +84,47 @@ class AllPinsPage extends React.Component {
 
 	render() {
 		return (
-			<div>
-				<h1>All Pins</h1>
+			<div className='all-pins'>
+				{!this.state.filterUser &&
+					<h1>All Pins</h1>
+				}
+
 				{this.state.loading &&
 					<CircularProgress size={40} thickness={4} />
 				}
+
 				{this.state.errorMessage &&
 					<p style={{color: 'red'}}>{this.state.errorMessage}</p>
 				}
-				<AllPins
-					pinList={this.state.pins}
-					likeBtn={this.likeBtn}
-					userLoggedIn={!!this.state.firebaseUser}
-				/>
+
+				{this.state.pins && this.state.pins.length !== 0 ?
+					(this.state.filterUser ?
+						<div>
+							<RaisedButton
+								label='back to all'
+								onClick={this.backToAll}
+								primary
+							/>
+				      <Grid
+				        pinList={this.state.pins.filter((pin) => {
+				        	return pin.userId === this.state.filterUser
+				        })}
+				        likeBtn={this.likeBtn}
+				        userLoggedIn={!!this.state.firebaseUser}
+				        filterUser={this.applyUserFilter}
+				      />
+			      </div> :
+			      <Grid
+			        pinList={this.state.pins}
+			        likeBtn={this.likeBtn}
+			        userLoggedIn={!!this.state.firebaseUser}
+			        filterUser={this.applyUserFilter}
+			      />
+			    ) :
+		      (
+		        null
+		      )
+		    }
 			</div>
 		)
 	}
