@@ -33,7 +33,6 @@ module.exports = function(app) {
 		})
 	})
 
-
 	app.get('/api/allpins', (req, res) => {
 		UserModel.find({}, (err, users) => {
 			if (err) throw err
@@ -62,7 +61,6 @@ module.exports = function(app) {
 			})
 		})
 	})
-
 
 	app.get('/api/mypins', (req, res) => {
 
@@ -156,6 +154,63 @@ module.exports = function(app) {
 				success: true,
 				pins: user.pins
 			})
+		}) // End UserModel.findOne
+	}) // End deletepin
+
+	app.post('/api/addlike', (req, res) => {
+
+		const id = req.body.id
+		const timeStamp = req.body.timestamp
+
+		UserModel.find({}, (err, users) => {
+			if (err) throw err
+			if (!users) {
+				res.status(200).json({
+					success: false,
+					errorMessage: 'Couldn\'t access the database'
+				})
+			}
+
+			let updatedPins = null
+			let indexOfPin = null
+			let userId = null
+
+			users.forEach((user) => {
+				user.pins.forEach((pin, index) => {
+					if (pin.timeStamp === parseInt(timeStamp, 10)) {
+						// Found Pin
+						userId = user.id
+						updatedPins = user.pins
+						indexOfPin = index
+					}
+				})
+			})
+
+			if(!updatedPins) {
+				res.status(200).json({
+					success: false,
+					errorMessage: 'Pin not found'
+				})
+			} else {
+				
+				const indexOfLike = updatedPins[indexOfPin].likes.indexOf(id)
+				if (indexOfLike === -1) {
+					updatedPins[indexOfPin].likes.push(id)
+				} else {
+					updatedPins[indexOfPin].likes.splice(indexOfLike, 1)
+				}
+				
+				UserModel.update({ id: userId }, {
+					$set: {
+						pins: updatedPins
+					}
+				}, (err) => {
+					if (err) throw err
+					return res.status(200).json({
+						success: true
+					})
+				})
+			}
 		}) // End UserModel.findOne
 	}) // End deletepin
 }

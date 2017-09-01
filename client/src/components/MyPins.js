@@ -5,7 +5,8 @@ import Grid from './Grid'
 const MyPins =({
 	pinList,
 	openNewPinForm,
-  deleteBtn
+  deleteBtn,
+  likeBtn
 }) => (
   <div>
     <NewPinCard open={openNewPinForm}/>
@@ -13,6 +14,7 @@ const MyPins =({
       <Grid
         pinList={pinList}
         deleteBtn={deleteBtn}
+        likeBtn={likeBtn}
       /> :
       (
         null

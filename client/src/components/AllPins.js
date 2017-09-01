@@ -4,11 +4,15 @@ import Grid from './Grid'
 
 
 const AllPins = ({
-  pinList
+  pinList,
+  likeBtn
 }) => (
   <div>
     {pinList && pinList.length !== 0 ?
-      <Grid pinList={pinList}/> :
+      <Grid
+        pinList={pinList}
+        likeBtn={likeBtn}
+      /> :
       (
         null
       )
@@ -17,7 +21,8 @@ const AllPins = ({
 )
 
 AllPins.PropTypes = {
-  pinList: PropTypes.array.isRequired
+  pinList: PropTypes.array.isRequired,
+  likeBtn: PropTypes.func.isRequired
 }
 
 export default AllPins

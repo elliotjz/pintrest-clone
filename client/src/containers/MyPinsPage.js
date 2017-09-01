@@ -2,6 +2,7 @@ import React from 'react'
 import MyPins from '../components/MyPins'
 import NewPinForm from '../components/NewPinForm'
 import CircularProgress from 'material-ui/CircularProgress';
+import Helpers from '../helpers/Helpers'
 
 class MyPinsPage extends React.Component {
 
@@ -20,6 +21,7 @@ class MyPinsPage extends React.Component {
 		this.processForm = this.processForm.bind(this)
 		this.formChange = this.formChange.bind(this)
 		this.deletePin = this.deletePin.bind(this)
+		this.likeBtn = this.likeBtn.bind(this)
 	}
 
 	openNewPinForm() {
@@ -125,6 +127,27 @@ class MyPinsPage extends React.Component {
     xhr.send()
 	}
 
+	likeBtn(timeStamp) {
+		const id = localStorage.getItem('id')
+		let pins = this.state.pins
+		pins.forEach((pin) => {
+			if (pin.timeStamp === parseInt(timeStamp, 10)) {
+				const indexOfLike = pin.likes.indexOf(id)
+				if (indexOfLike === -1) {
+					console.log('adding like')
+					pin.likes.push(id)
+				} else {
+					console.log('deleting like')
+					pin.likes.splice(indexOfLike, 1)
+				}
+			}
+		})
+		this.setState({
+			pins
+		})
+		Helpers.addLike(timeStamp)
+	}
+
 	componentDidMount() {
 		this.getUserPins()
 	}
@@ -145,6 +168,7 @@ class MyPinsPage extends React.Component {
 					pinList={this.state.pins}
 					openNewPinForm={this.openNewPinForm}
 					deleteBtn={this.deletePin}
+					likeBtn={this.likeBtn}
 				/>
 
 				{this.state.newPinFormOpen &&

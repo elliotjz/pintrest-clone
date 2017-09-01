@@ -1,6 +1,7 @@
 import React from 'react'
 import AllPins from '../components/AllPins'
 import CircularProgress from 'material-ui/CircularProgress';
+import Helpers from '../helpers/Helpers'
 
 class AllPinsPage extends React.Component {
 
@@ -11,6 +12,29 @@ class AllPinsPage extends React.Component {
 			loading: true,
 			errorMessage: null
 		}
+
+		this.likeBtn = this.likeBtn.bind(this)
+	}
+
+	likeBtn(timeStamp) {
+		const id = localStorage.getItem('id')
+		let pins = this.state.pins
+		pins.forEach((pin) => {
+			if (pin.timeStamp === parseInt(timeStamp, 10)) {
+				const indexOfLike = pin.likes.indexOf(id)
+				if (indexOfLike === -1) {
+					console.log('adding like')
+					pin.likes.push(id)
+				} else {
+					console.log('deleting like')
+					pin.likes.splice(indexOfLike, 1)
+				}
+			}
+		})
+		this.setState({
+			pins
+		})
+		Helpers.addLike(timeStamp)
 	}
 
 	componentDidMount() {
@@ -48,6 +72,7 @@ class AllPinsPage extends React.Component {
 				}
 				<AllPins
 					pinList={this.state.pins}
+					likeBtn={this.likeBtn}
 				/>
 			</div>
 		)
