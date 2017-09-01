@@ -3,18 +3,17 @@ import twitterConfig from './twitterConfig'
 
 
 function sendUserToServer(result, callback) {
-	console.log('sending user to server')
 	
 	const id = result.user.uid
 	const name = result.user.displayName
-	let requestData = `id=${id}&name=${name}`
+	const img = result.user.photoURL
+	let requestData = `id=${id}&name=${name}&img=${img}`
 
   const xhr = new XMLHttpRequest()
   xhr.open('post', '/api/createuser')
   xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
   xhr.responseType = 'json'
   xhr.addEventListener('load', () => {
-  	console.log('loaded')
     if (xhr.status === 200) {
       console.log('success... response 200!')
       localStorage.setItem('token', result.credential.accessToken)

@@ -4,12 +4,16 @@ import Grid from './Grid'
 
 const MyPins =({
 	pinList,
-	openNewPinForm
+	openNewPinForm,
+  deleteBtn
 }) => (
   <div>
     <NewPinCard open={openNewPinForm}/>
     {pinList && pinList.length !== 0 ?
-      <Grid pinList={pinList} /> :
+      <Grid
+        pinList={pinList}
+        deleteBtn={deleteBtn}
+      /> :
       (
         null
       )

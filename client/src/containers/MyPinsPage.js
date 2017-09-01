@@ -19,6 +19,7 @@ class MyPinsPage extends React.Component {
 		this.openNewPinForm = this.openNewPinForm.bind(this)
 		this.processForm = this.processForm.bind(this)
 		this.formChange = this.formChange.bind(this)
+		this.deletePin = this.deletePin.bind(this)
 	}
 
 	openNewPinForm() {
@@ -94,6 +95,36 @@ class MyPinsPage extends React.Component {
     xhr.send()
 	}
 
+	deletePin(timeStamp) {
+		this.setState({
+			loading: true
+		})
+
+		const id = localStorage.getItem('id')
+
+		const xhr = new XMLHttpRequest()
+    xhr.open('post', '/api/deletepin')
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
+    xhr.setRequestHeader('timestamp', timeStamp)
+    xhr.setRequestHeader('id', id)
+    xhr.responseType = 'json'
+    xhr.addEventListener('load', () => {
+      
+      if (xhr.status === 200 && xhr.response.success) {
+        this.setState({
+        	pins: xhr.response.pins,
+        	loading: false,
+        })
+      } else {
+      	this.setState({
+      		loading: false,
+      		errorMessage: xhr.response.errorMessage
+      	})
+      }
+    })
+    xhr.send()
+	}
+
 	componentDidMount() {
 		this.getUserPins()
 	}
@@ -113,6 +144,7 @@ class MyPinsPage extends React.Component {
 				<MyPins
 					pinList={this.state.pins}
 					openNewPinForm={this.openNewPinForm}
+					deleteBtn={this.deletePin}
 				/>
 
 				{this.state.newPinFormOpen &&

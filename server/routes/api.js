@@ -9,7 +9,8 @@ module.exports = function(app) {
 		const userData = {
 			id: req.body.id,
 			name: name = req.body.name,
-			pins: []
+			pins: [],
+			img: req.body.img
 		}
 
 		UserModel.findOne({ id: userData.id }, (err, data) => {
@@ -108,7 +109,8 @@ module.exports = function(app) {
 				url: req.body.url,
 				description: req.body.description,
 				likes: [],
-				timeStamp: Date.now()
+				timeStamp: Date.now(),
+				userImg: user.img
 			}
 			user.pins.push(pin)
 			user.save((err) => {
@@ -119,8 +121,43 @@ module.exports = function(app) {
 				success: true
 			})
 		}) // End UserModel.findOne
-		
 	}) // End /api/newpin
+
+	app.post('/api/deletepin', (req, res) => {
+
+		const id = req.headers.id
+		const timeStamp = req.headers.timestamp
+
+		UserModel.findOne({ id: id }, (err, user) => {
+			if (err) throw err
+			if (!user) {
+				res.status(200).json({
+					success: false,
+					errorMessage: 'Couldn\'t find user in database'
+				})
+			}
+
+			let indexOfPin = -1
+			user.pins.forEach((pin, index) => {
+				console.log(typeof pin.timeStamp)
+				console.log('equal to')
+				console.log(typeof timeStamp)
+				if (pin.timeStamp === parseInt(timeStamp)) {
+					console.log('YES THEY ARE EQUAL')
+					console.log(index)
+					indexOfPin = index
+				}
+			})
+			user.pins.splice(indexOfPin, 1)
+			user.save((err) => {
+				if (err) throw err
+			})
+			res.status(200).json({
+				success: true,
+				pins: user.pins
+			})
+		}) // End UserModel.findOne
+	}) // End deletepin
 }
 
 

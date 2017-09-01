@@ -23,12 +23,8 @@ class Grid extends React.Component {
 	}
 
 	mapPinsToColumns() {
-		console.log('mapping pins to columns')
 		let columns = []
 		const numberOfColumns = this.state.columns
-
-		console.log('number of columns:')
-		console.log(numberOfColumns)
 
 		for(let i = 0; i < numberOfColumns; i++) {
 			columns.push([])
@@ -36,15 +32,12 @@ class Grid extends React.Component {
 		this.props.pinList.forEach((pin, index) => {
 			columns[index % numberOfColumns].push(pin)
 		})
-		console.log('columns:')
-		console.log(columns)
 		return columns
 	}
 
 	componentDidMount() {
 		this.getColumns()
 		window.addEventListener("resize", () => {
-			console.log('resized')
 			this.getColumns()
 		})
 	}
@@ -63,6 +56,7 @@ class Grid extends React.Component {
 											return <Pin
 												key={index}
 												pinData={pin}
+												deleteBtn={this.props.deleteBtn}
 											/>
 										})
 									}

@@ -7,8 +7,6 @@ const session = require("express-session")
 const Strategy = require("passport-twitter").Strategy
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
-
-const authRoutes = require('./server/routes/auth')
 const apiRoutes = require('./server/routes/api')
 
 //Connect to DB
@@ -31,7 +29,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 
 // ----------- ROUTES ----------
-//authRoutes(app, passport)
 apiRoutes(app)
 
 // Send requests to the react app

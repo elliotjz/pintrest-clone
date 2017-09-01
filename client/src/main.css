@@ -92,7 +92,18 @@ body {
 .tile {
   margin-bottom: 10px;
 }
-
 /* END MASONARY CSS */
 
+.pin-actions {
+  box-shadow: 0 0 10px #555;
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 
+.pin-actions img {
+  border-radius: 25px;
+  width: 50px;
+  height: 50px;
+}
