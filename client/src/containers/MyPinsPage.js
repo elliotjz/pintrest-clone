@@ -1,4 +1,5 @@
 import React from 'react'
+import { Redirect } from 'react-router-dom'
 import RaisedButton from 'material-ui/RaisedButton'
 import NewPinForm from '../components/NewPinForm'
 import Grid from '../components/Grid'
@@ -12,7 +13,7 @@ class MyPinsPage extends React.Component {
 		super(props);
 		this.state = {
 			pins: null,
-			firebaseUser: null,
+			firebaseUser: {},
 			loading: true,
 			errorMessage: null,
 			newPinFormOpen: false,
@@ -20,16 +21,16 @@ class MyPinsPage extends React.Component {
 			description: ''
 		}
 
-		this.openNewPinForm = this.openNewPinForm.bind(this)
+		this.toggleNewPinForm = this.toggleNewPinForm.bind(this)
 		this.processNewPinForm = this.processNewPinForm.bind(this)
 		this.formChange = this.formChange.bind(this)
 		this.deletePin = this.deletePin.bind(this)
 		this.likeBtn = this.likeBtn.bind(this)
 	}
 
-	openNewPinForm() {
+	toggleNewPinForm() {
 		this.setState({
-			newPinFormOpen: true
+			newPinFormOpen: !this.state.newPinFormOpen
 		})
 	}
 
@@ -171,46 +172,53 @@ class MyPinsPage extends React.Component {
 	}
 
 	render() {
-		return (
-			<div>
-				<h1>My Pins</h1>
+		return this.state.firebaseUser ?
+			(
+				<div>
+					<h1>My Pins</h1>
 
-				<RaisedButton
-					label='New Pin'
-					onClick={this.openNewPinForm}
-					primary
-				/>
-				
-				{this.state.loading &&
-					<CircularProgress size={40} thickness={4} />
-				}
+					<div>
+						<RaisedButton
+							label='New Pin'
+							onClick={this.toggleNewPinForm}
+							primary
+						/>
+					</div>
+					
+					{this.state.loading &&
+						<CircularProgress size={40} thickness={4} />
+					}
 
-				{this.state.errorMessage &&
-					<p style={{color: 'red'}}>{this.state.errorMessage}</p>
-				}
+					{this.state.errorMessage &&
+						<p style={{color: 'red'}}>{this.state.errorMessage}</p>
+					}
 
-				{this.state.pins && this.state.pins.length !== 0 ?
-		      <Grid
-		        pinList={this.state.pins}
-		        deleteBtn={this.deletePin}
-		        likeBtn={this.likeBtn}
-		        userLoggedIn={!!this.state.firebaseUser}
-		      /> :
-		      (
-		        null
-		      )
-		    }
+					{this.state.pins && this.state.pins.length !== 0 ?
+			      <Grid
+			        pinList={this.state.pins}
+			        deleteBtn={this.deletePin}
+			        likeBtn={this.likeBtn}
+			        userLoggedIn={!!this.state.firebaseUser}
+			      /> :
+			      (
+			        null
+			      )
+			    }
 
-				{this.state.newPinFormOpen &&
-		    	<NewPinForm 
-		    		onSubmit={this.processNewPinForm}
-		    		onChange={this.formChange}
-		    		url={this.state.url}
-		    		description={this.state.description}
-		    	/>
-    		}
-			</div>
-		)
+					{this.state.newPinFormOpen &&
+			    	<NewPinForm 
+			    		onSubmit={this.processNewPinForm}
+			    		onChange={this.formChange}
+			    		url={this.state.url}
+			    		description={this.state.description}
+			    		closeForm={this.toggleNewPinForm}
+			    	/>
+	    		}
+				</div>
+			) :
+			(
+				<Redirect to='/' />
+			)
 	}
 }
 

@@ -4,6 +4,7 @@ import AllPinsPage from './containers/AllPinsPage'
 import MyPinsPage from './containers/MyPinsPage'
 import Logout from './components/Logout'
 import LoginPage from './containers/LoginPage'
+import NotFound from './components/NotFound'
 
 
 const Main = () => (
@@ -31,6 +32,7 @@ const Main = () => (
 				)
 			}}
 			/>
+			<Route path='*' component={NotFound} />
 		</Switch>
 	</div>
 )

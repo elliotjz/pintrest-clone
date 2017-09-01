@@ -151,6 +151,9 @@ module.exports = function(app) {
 			user.save((err) => {
 				if (err) throw err
 			})
+			user.pins.sort((a, b) => {
+				return b.timeStamp - a.timeStamp
+			})
 			res.status(200).json({
 				success: true,
 				pins: user.pins

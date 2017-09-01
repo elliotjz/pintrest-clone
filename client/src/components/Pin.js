@@ -23,6 +23,11 @@ const Pin = ({
       <img
       	src={pinData.url}
       	alt={pinData.description}
+      	onError={(event) => {
+      		event.target.onerror = "";
+      		event.target.src = "http://cumbrianrun.co.uk/wp-content/uploads/2014/02/default-placeholder-300x300.png";
+    			return true;
+      	}}
       />
     </CardMedia>
 
