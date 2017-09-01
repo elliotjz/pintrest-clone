@@ -6,7 +6,8 @@ const MyPins =({
 	pinList,
 	openNewPinForm,
   deleteBtn,
-  likeBtn
+  likeBtn,
+  userLoggedIn
 }) => (
   <div>
     <NewPinCard open={openNewPinForm}/>
@@ -15,6 +16,7 @@ const MyPins =({
         pinList={pinList}
         deleteBtn={deleteBtn}
         likeBtn={likeBtn}
+        userLoggedIn={userLoggedIn}
       /> :
       (
         null

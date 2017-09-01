@@ -14,7 +14,8 @@ const style = {
 const Pin = ({
 	pinData,
 	deleteBtn,
-	likeBtn
+	likeBtn,
+	userLoggedIn
 }) => (
 	<Card className='tile' style={style}>
 		<CardMedia>
@@ -28,7 +29,7 @@ const Pin = ({
 				{pinData.description}
 			</CardText>
 		</div>
-		{localStorage.getItem('id') &&
+		{userLoggedIn &&
 			<div className='pin-actions'>
 				<img src={pinData.userImg} alt='user thumbnail'/>
 				{deleteBtn &&

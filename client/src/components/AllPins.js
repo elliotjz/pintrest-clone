@@ -5,13 +5,15 @@ import Grid from './Grid'
 
 const AllPins = ({
   pinList,
-  likeBtn
+  likeBtn,
+  userLoggedIn
 }) => (
   <div>
     {pinList && pinList.length !== 0 ?
       <Grid
         pinList={pinList}
         likeBtn={likeBtn}
+        userLoggedIn={userLoggedIn}
       /> :
       (
         null

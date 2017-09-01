@@ -2,6 +2,7 @@ import React from 'react'
 import AllPins from '../components/AllPins'
 import CircularProgress from 'material-ui/CircularProgress';
 import Helpers from '../helpers/Helpers'
+import Auth from '../config/Auth'
 
 class AllPinsPage extends React.Component {
 
@@ -10,23 +11,22 @@ class AllPinsPage extends React.Component {
 		this.state = {
 			pins: null,
 			loading: true,
-			errorMessage: null
+			errorMessage: null,
+			firebaseUser: null
 		}
 
 		this.likeBtn = this.likeBtn.bind(this)
 	}
 
 	likeBtn(timeStamp) {
-		const id = localStorage.getItem('id')
+		const id = this.state.firebaseUser.uid
 		let pins = this.state.pins
 		pins.forEach((pin) => {
 			if (pin.timeStamp === parseInt(timeStamp, 10)) {
 				const indexOfLike = pin.likes.indexOf(id)
 				if (indexOfLike === -1) {
-					console.log('adding like')
 					pin.likes.push(id)
 				} else {
-					console.log('deleting like')
 					pin.likes.splice(indexOfLike, 1)
 				}
 			}
@@ -39,12 +39,17 @@ class AllPinsPage extends React.Component {
 
 	componentDidMount() {
 
+		Auth.getUser((user) => {
+			this.setState({
+				firebaseUser: user
+			})
+		})
+
 		const xhr = new XMLHttpRequest()
     xhr.open('get', '/api/allpins')
     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
     xhr.responseType = 'json'
     xhr.addEventListener('load', () => {
-      
       if (xhr.status === 200 && xhr.response.success) {
         this.setState({
         	pins: xhr.response.pins,
@@ -53,7 +58,7 @@ class AllPinsPage extends React.Component {
       } else {
       	this.setState({
       		loading: false,
-      		errorMessage: xhr.response.errorMessage
+      		errorMessage: xhr.response.errorMessage,
       	})
       }
     })
@@ -73,6 +78,7 @@ class AllPinsPage extends React.Component {
 				<AllPins
 					pinList={this.state.pins}
 					likeBtn={this.likeBtn}
+					userLoggedIn={!!this.state.firebaseUser}
 				/>
 			</div>
 		)

@@ -60,8 +60,6 @@ class Auth {
 		  	errorMessage: error.code
 		  })
 		})
-
-
 	}
 
 	static logout(callback) {
@@ -75,6 +73,14 @@ class Auth {
 		}).catch(function(error) {
 		  callback()
 		})
+	}
+
+	static getUser(callback) {
+		firebase.auth().onAuthStateChanged((user) => {
+			callback(user)
+		})
+
+		
 	}
 }
 

@@ -3,6 +3,7 @@ import MyPins from '../components/MyPins'
 import NewPinForm from '../components/NewPinForm'
 import CircularProgress from 'material-ui/CircularProgress';
 import Helpers from '../helpers/Helpers'
+import Auth from '../config/Auth'
 
 class MyPinsPage extends React.Component {
 
@@ -10,6 +11,7 @@ class MyPinsPage extends React.Component {
 		super(props);
 		this.state = {
 			pins: null,
+			firebaseUser: null,
 			loading: true,
 			errorMessage: null,
 			newPinFormOpen: false,
@@ -18,7 +20,7 @@ class MyPinsPage extends React.Component {
 		}
 
 		this.openNewPinForm = this.openNewPinForm.bind(this)
-		this.processForm = this.processForm.bind(this)
+		this.processNewPinForm = this.processNewPinForm.bind(this)
 		this.formChange = this.formChange.bind(this)
 		this.deletePin = this.deletePin.bind(this)
 		this.likeBtn = this.likeBtn.bind(this)
@@ -30,10 +32,10 @@ class MyPinsPage extends React.Component {
 		})
 	}
 
-	processForm(event) {
+	processNewPinForm(event) {
 		event.preventDefault()
 
-		const id = localStorage.getItem('id')
+		const id = this.state.firebaseUser.uid
 		const url = this.state.url
 		const description = this.state.description
 		const pinData = `id=${id}&url=${url}&description=${description}`
@@ -102,7 +104,7 @@ class MyPinsPage extends React.Component {
 			loading: true
 		})
 
-		const id = localStorage.getItem('id')
+		const id = this.state.firebaseUser.uid
 
 		const xhr = new XMLHttpRequest()
     xhr.open('post', '/api/deletepin')
@@ -128,16 +130,14 @@ class MyPinsPage extends React.Component {
 	}
 
 	likeBtn(timeStamp) {
-		const id = localStorage.getItem('id')
+		const id = this.state.firebaseUser.uid
 		let pins = this.state.pins
 		pins.forEach((pin) => {
 			if (pin.timeStamp === parseInt(timeStamp, 10)) {
 				const indexOfLike = pin.likes.indexOf(id)
 				if (indexOfLike === -1) {
-					console.log('adding like')
 					pin.likes.push(id)
 				} else {
-					console.log('deleting like')
 					pin.likes.splice(indexOfLike, 1)
 				}
 			}
@@ -149,6 +149,12 @@ class MyPinsPage extends React.Component {
 	}
 
 	componentDidMount() {
+		Auth.getUser((user) => {
+			this.setState({
+				firebaseUser: user
+			})
+		})
+
 		this.getUserPins()
 	}
 
@@ -169,11 +175,12 @@ class MyPinsPage extends React.Component {
 					openNewPinForm={this.openNewPinForm}
 					deleteBtn={this.deletePin}
 					likeBtn={this.likeBtn}
+					userLoggedIn={!!this.state.firebaseUser}
 				/>
 
 				{this.state.newPinFormOpen &&
 		    	<NewPinForm 
-		    		onSubmit={this.processForm}
+		    		onSubmit={this.processNewPinForm}
 		    		onChange={this.formChange}
 		    		url={this.state.url}
 		    		description={this.state.description}
