@@ -1,6 +1,6 @@
 import React from 'react'
 import NewPinCard from './NewPinCard'
-import Pin from './Pin'
+import Grid from './Grid'
 
 const MyPins =({
 	pinList,
@@ -9,14 +9,11 @@ const MyPins =({
   <div>
     <NewPinCard open={openNewPinForm}/>
     {pinList && pinList.length !== 0 ?
-      pinList.map( (item, index) => {
-        return <Pin key={index} pinData={item} />
-      }) :
+      <Grid pinList={pinList} /> :
       (
         null
       )
     }
-    
   </div>
 )
 

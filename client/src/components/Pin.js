@@ -4,7 +4,7 @@ import { Card, CardMedia, CardText } from 'material-ui/Card'
 const Pin = ({
 	pinData
 }) => (
-	<Card className='pin'>
+	<Card className='tile'>
 		<CardMedia>
       <img src={pinData.url} alt={pinData.description} />
     </CardMedia>

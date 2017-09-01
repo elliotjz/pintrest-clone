@@ -34,9 +34,65 @@ body {
   z-index: 101;
 } 
 
-.pin {
-  width: 300px;
-  padding: 3px;
-  margin: 5px auto;
-  min-height: 100px;
+/* MASONARY CSS */
+
+.masonry-container {
+  width: 90%;
+  margin: auto;
+  margin-top: 10px;
 }
+
+.masonary-container p {
+  text-align: center;
+  padding: 4px;
+  font-family: monospace;
+  background: #222;
+  color: #efefef;
+}
+
+.masonry {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: stretch;
+  width: 100%;
+  margin: auto;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-content: center;
+  width: 20%;
+  margin: 5px;
+}
+
+@media screen and (min-width: 800px) {
+  .column {
+    width: 25%
+  }
+}
+@media screen and (min-width: 600px) {
+  .column {
+    width: 33.333%
+  }
+}
+@media screen and (min-width: 400px) {
+  .column {
+    width: 50%
+  }
+}
+@media screen and (max-width: 400px) {
+  .column {
+    width: 100%
+  }
+}
+
+.tile {
+  margin-bottom: 10px;
+}
+
+/* END MASONARY CSS */
+
+

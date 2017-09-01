@@ -42,7 +42,9 @@ class MyPinsPage extends React.Component {
     xhr.addEventListener('load', () => {
       if (xhr.status === 200) {
       	this.setState({
-      		newPinFormOpen: false
+      		newPinFormOpen: false,
+      		url: '',
+      		description: ''
       	})
       	this.getUserPins()
         
@@ -66,6 +68,9 @@ class MyPinsPage extends React.Component {
 
 	getUserPins() {
 		const id = localStorage.getItem('id')
+		this.setState({
+			loading: true
+		})
 
 		const xhr = new XMLHttpRequest()
     xhr.open('get', '/api/mypins')
@@ -124,3 +129,7 @@ class MyPinsPage extends React.Component {
 }
 
 export default MyPinsPage
+
+
+
+
