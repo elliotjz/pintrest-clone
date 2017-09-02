@@ -21,7 +21,7 @@ const Pin = ({
 	<Card className='tile' style={style}>
 		<CardMedia>
       <img
-      	src={pinData.url}
+      	src={"http://static.tvtropes.org/pmwiki/pub/images/sunnyphiladelphia.jpg"}
       	alt={pinData.description}
       	onError={(event) => {
       		event.target.onerror = "";
