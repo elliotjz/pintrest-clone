@@ -22,6 +22,9 @@ const muiTheme = getMuiTheme({
   appBar: {
     height: 50,
   },
+  IconMenu: {
+  	backgroundColor: grey800
+  }
 })
 
 ReactDOM.render((

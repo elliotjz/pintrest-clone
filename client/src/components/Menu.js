@@ -5,6 +5,7 @@ import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui/svg-icons/navigation/menu'
 import FlatButton from 'material-ui/FlatButton'
 import { Link } from 'react-router-dom'
+import { grey800 } from 'material-ui/styles/colors'
 
 class Menu extends React.Component {
 
@@ -87,6 +88,7 @@ class Menu extends React.Component {
 							<MenuItem
 								primaryText={item.text}
 								onTouchTap={this.handleClose}
+								style={{color: '#424242'}}
 							/>
 						</Link>
 					)
