@@ -2,10 +2,11 @@ import React from 'react'
 import { Redirect } from 'react-router-dom'
 import RaisedButton from 'material-ui/RaisedButton'
 import NewPinForm from '../components/NewPinForm'
-import Grid from '../components/Grid'
 import CircularProgress from 'material-ui/CircularProgress'
 import Helpers from '../helpers/Helpers'
 import Auth from '../config/Auth'
+import Pin from '../components/Pin'
+import Masonry from 'react-masonry-component'
 
 class MyPinsPage extends React.Component {
 
@@ -18,7 +19,8 @@ class MyPinsPage extends React.Component {
 			errorMessage: null,
 			newPinFormOpen: false,
 			url: '',
-			description: ''
+			description: '',
+			style: {}
 		}
 
 		this.toggleNewPinForm = this.toggleNewPinForm.bind(this)
@@ -150,6 +152,25 @@ class MyPinsPage extends React.Component {
 		Helpers.addLike(timeStamp)
 	}
 
+	resizeGallery() {
+		const windowWidth = window.innerWidth
+    let galleryWidth = '300px'
+    if (windowWidth >= 1200) {
+    	galleryWidth = '1200px'
+    } else if (windowWidth >= 900) {
+    	galleryWidth = '900px'
+    } else if (windowWidth >= 600) {
+    	galleryWidth = '600px'
+    }
+    this.setState({
+    	style: {
+				margin: 'auto',
+				width: galleryWidth,
+				marginTop: '20px'
+			}
+    })
+	}
+
 	componentDidMount() {
 		Auth.getUser((user) => {
 			this.setState({
@@ -169,9 +190,30 @@ class MyPinsPage extends React.Component {
 		  	})
 		  }
 		}
+
+		this.resizeGallery()
+    window.addEventListener("resize", () => {
+	    this.resizeGallery()
+		})
 	}
 
 	render() {
+
+		let childElements = this.state.pins ?
+			this.state.pins.map((pin, index) => {
+				return (
+					<div key={index}>
+				    <Pin
+							pinData={pin}
+							likeBtn={this.likeBtn}
+							userLoggedIn={!!this.state.firebaseUser}
+			        deleteBtn={this.deletePin}
+						/>
+					</div>
+				)
+			}) :
+			null
+
 		return this.state.firebaseUser ?
 			(
 				<div className='page'>
@@ -194,12 +236,15 @@ class MyPinsPage extends React.Component {
 					}
 
 					{this.state.pins && this.state.pins.length !== 0 ?
-			      <Grid
-			        pinList={this.state.pins}
-			        deleteBtn={this.deletePin}
-			        likeBtn={this.likeBtn}
-			        userLoggedIn={!!this.state.firebaseUser}
-			      /> :
+			      <div style={this.state.style}>
+							<Masonry
+			          className='my-gallery-class' // default ''
+			          disableImagesLoaded={false} // default false
+			          updateOnEachImageLoad={false} // default false and works only if disableImagesLoaded is false
+			        >
+			          {childElements}
+			        </Masonry>
+			      </div> :
 			      (
 			        null
 			      )

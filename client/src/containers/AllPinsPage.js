@@ -1,10 +1,10 @@
 import React from 'react'
-import Grid from '../components/Grid'
 import CircularProgress from 'material-ui/CircularProgress'
 import RaisedButton from 'material-ui/RaisedButton'
 import Helpers from '../helpers/Helpers'
 import Auth from '../config/Auth'
-
+import Masonry from 'react-masonry-component'
+import Pin from '../components/Pin'
 
 class AllPinsPage extends React.Component {
 
@@ -15,7 +15,8 @@ class AllPinsPage extends React.Component {
 			loading: true,
 			errorMessage: null,
 			firebaseUser: null,
-			filterUser: null
+			filterUser: null,
+			style: {}
 		}
 
 		this.likeBtn = this.likeBtn.bind(this)
@@ -54,6 +55,24 @@ class AllPinsPage extends React.Component {
 		})
 	}
 
+	resizeGallery() {
+		const windowWidth = window.innerWidth
+    let galleryWidth = '300px'
+    if (windowWidth >= 1200) {
+    	galleryWidth = '1200px'
+    } else if (windowWidth >= 900) {
+    	galleryWidth = '900px'
+    } else if (windowWidth >= 600) {
+    	galleryWidth = '600px'
+    }
+    this.setState({
+    	style: {
+				margin: 'auto',
+				width: galleryWidth
+			}
+    })
+	}
+
 	componentDidMount() {
 
 		Auth.getUser((user) => {
@@ -80,9 +99,34 @@ class AllPinsPage extends React.Component {
       }
     })
     xhr.send()
+
+    this.resizeGallery()
+    window.addEventListener("resize", () => {
+	    this.resizeGallery()
+		})
 	}
 
 	render() {
+		let pinData = this.state.filterUser ?
+			this.state.pins.filter((pin) => {
+      	return pin.userId === this.state.filterUser
+      }) : this.state.pins
+
+		let childElements = this.state.pins ?
+			pinData.map((pin, index) => {
+				return (
+					<div key={index}>
+				    <Pin
+							pinData={pin}
+							likeBtn={this.likeBtn}
+							userLoggedIn={!!this.state.firebaseUser}
+							filterUser={this.applyUserFilter}
+						/>
+					</div>
+				)
+			}) :
+			null
+
 		return (
 			<div className='page'>
 				{!this.state.filterUser &&
@@ -97,30 +141,21 @@ class AllPinsPage extends React.Component {
 					<p style={{color: 'red'}}>{this.state.errorMessage}</p>
 				}
 
+				{this.state.filterUser &&
+					<div id='back-to-all-btn'>
+						<RaisedButton
+							label='back to all'
+							onClick={this.backToAll}
+							primary
+						/>
+					</div>
+				}
 				{this.state.pins && this.state.pins.length !== 0 ?
-					(this.state.filterUser ?
-						<div>
-							<RaisedButton
-								label='back to all'
-								onClick={this.backToAll}
-								primary
-							/>
-				      <Grid
-				        pinList={this.state.pins.filter((pin) => {
-				        	return pin.userId === this.state.filterUser
-				        })}
-				        likeBtn={this.likeBtn}
-				        userLoggedIn={!!this.state.firebaseUser}
-				        filterUser={this.applyUserFilter}
-				      />
-			      </div> :
-			      <Grid
-			        pinList={this.state.pins}
-			        likeBtn={this.likeBtn}
-			        userLoggedIn={!!this.state.firebaseUser}
-			        filterUser={this.applyUserFilter}
-			      />
-			    ) :
+		      <div style={this.state.style}>
+						<Masonry className='my-gallery-class'>
+		          {childElements}
+		        </Masonry>
+		      </div> :
 		      (
 		        null
 		      )

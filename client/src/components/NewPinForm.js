@@ -3,7 +3,6 @@ import { Card, CardTitle } from 'material-ui/Card'
 import RaisedButton from 'material-ui/RaisedButton'
 import TextField from 'material-ui/TextField';
 
-
 class NewPinForm extends React.Component {
 
   formClick(e) {
@@ -13,7 +12,11 @@ class NewPinForm extends React.Component {
   render() {
     return (
       <div id='screen' onClick={this.props.closeForm}>
-      	<Card id='new-pin-form' onClick={this.formClick} >
+      	<Card
+          id='new-pin-form'
+          onClick={this.formClick}
+          
+        >
           <CardTitle title="Create New Pin"/>
           <form onSubmit={this.props.onSubmit} >
             <TextField
