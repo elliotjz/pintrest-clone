@@ -5,7 +5,10 @@ import IconButton from 'material-ui/IconButton'
 import MenuIcon from 'material-ui/svg-icons/navigation/menu'
 import FlatButton from 'material-ui/FlatButton'
 import { Link } from 'react-router-dom'
-import { grey800 } from 'material-ui/styles/colors'
+
+const style = {
+	color: '#64B5F6'
+}
 
 class Menu extends React.Component {
 
@@ -67,7 +70,7 @@ class Menu extends React.Component {
 					return (
 						<Link to={item.url} key={index} >
 							<div className='menu-btn'>
-								<FlatButton label={item.text} />
+								<FlatButton label={item.text} style={style}/>
 							</div>
 						</Link>
 					)
@@ -81,6 +84,7 @@ class Menu extends React.Component {
 				targetOrigin={{horizontal: 'right', vertical: 'top'}}
 				onRequestChange={open => this.setState({ open })}
 				open={this.state.open}
+				iconStyle={style}
 			>
 				{menuItems.map( (item, index) => {
 					return (

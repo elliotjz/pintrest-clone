@@ -46,68 +46,16 @@ body {
   margin-top: -140px;
   margin-left: -150px;
   z-index: 101;
-} 
-
-/* MASONARY CSS */
+}
 
 .masonry-container {
-  width: 90%;
   margin: auto;
-  margin-top: 10px;
-}
-
-.masonary-container p {
-  text-align: center;
-  padding: 4px;
-  font-family: monospace;
-  background: #222;
-  color: #efefef;
-}
-
-.masonry {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-content: stretch;
-  width: 100%;
-  margin: auto;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-content: center;
-  width: 20%;
-  margin: 5px;
-}
-
-/* Adjusting column width depending on window size */
-@media screen and (min-width: 800px) {
-  .column {
-    width: 25%
-  }
-}
-@media screen and (min-width: 600px) {
-  .column {
-    width: 33.333%
-  }
-}
-@media screen and (min-width: 400px) {
-  .column {
-    width: 50%
-  }
-}
-@media screen and (max-width: 400px) {
-  .column {
-    width: 100%
-  }
 }
 
 .tile {
-  margin-bottom: 10px;
+  width: 290px;
+  margin: auto;
 }
-/* END MASONARY CSS */
 
 .pin-actions {
   padding: 5px;
@@ -131,4 +79,8 @@ body {
   display: flex;
   margin-right: 4px;
   color: #fff;
+}
+
+#back-to-all-btn {
+  margin: 18px auto 26px auto;
 }

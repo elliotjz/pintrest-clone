@@ -8,7 +8,7 @@ import {blue200, blue500, red300, red500, grey100, grey800} from 'material-ui/st
 const style = {
 	backgroundColor: grey800,
 	padding: '5px',
-
+	margin: '5px'
 }
 
 const Pin = ({
@@ -21,7 +21,7 @@ const Pin = ({
 	<Card className='tile' style={style}>
 		<CardMedia>
       <img
-      	src={"http://static.tvtropes.org/pmwiki/pub/images/sunnyphiladelphia.jpg"}
+      	src={pinData.url}
       	alt={pinData.description}
       	onError={(event) => {
       		event.target.onerror = "";
