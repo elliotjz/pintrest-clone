@@ -1,224 +1,216 @@
-const UserModel = require('../models/user')
-const User = require('mongoose').model('User')
-
+const UserModel = require("../models/user");
+const User = require("mongoose").model("User");
 
 module.exports = function(app) {
+  app.post("/api/createuser", (req, res) => {
+    const userData = {
+      id: req.body.id,
+      name: (name = req.body.name),
+      pins: [],
+      img: req.body.img
+    };
 
-	app.post('/api/createuser', (req, res) => {
+    UserModel.findOne({ id: userData.id }, (err, data) => {
+      if (err) throw err;
 
-		const userData = {
-			id: req.body.id,
-			name: name = req.body.name,
-			pins: [],
-			img: req.body.img
-		}
+      if (data) {
+        if (data.name !== userData.name) {
+          // CHANGE NAME ON DB
+        }
+      } else {
+        // No user with this ID, so create user.
+        const newUser = new User(userData);
+        newUser.save(err => {
+          if (err) throw err;
+        });
+      }
+      res.json({
+        success: true
+      });
+    });
+  });
 
-		UserModel.findOne({ id: userData.id }, (err, data) => {
-			if (err) throw err
+  app.get("/api/allpins", (req, res) => {
+    UserModel.find({}, (err, users) => {
+      if (err) throw err;
+      if (!users) {
+        return res.status(200).json({
+          pins: []
+        });
+      }
 
-			if (data) {
-				if (data.name !== userData.name) {
-					// CHANGE NAME ON DB
-				}
-			} else {
-				// No user with this ID, so create user.
-				const newUser = new User(userData)
-				newUser.save((err) => {
-					if (err) throw err
-				})
-			}
-			res.json({
-				success: true
-			})
-		})
-	})
+      let pins = [];
+      users.forEach(user => {
+        if (user.pins.length > 0) {
+          user.pins.forEach(pin => {
+            pins.push(pin);
+          });
+        }
+      });
 
-	app.get('/api/allpins', (req, res) => {
-		UserModel.find({}, (err, users) => {
-			if (err) throw err
-			if (!users) {
-				return res.status(200).json({
-					pins: []
-				})
-			}
+      pins.sort((a, b) => {
+        return b.timeStamp - a.timeStamp;
+      });
 
-			let pins = []
-			users.forEach((user) => {
-				if (user.pins.length > 0) {
-					user.pins.forEach((pin) => {
-						pins.push(pin)
-					})
-				}
-			})
+      return res.status(200).json({
+        success: true,
+        pins
+      });
+    });
+  });
 
-			pins.sort((a, b) => {
-				return b.timeStamp - a.timeStamp
-			})
+  app.get("/api/mypins", (req, res) => {
+    UserModel.findOne({ id: req.headers.id }, (err, user) => {
+      if (err) throw err;
+      if (!user) {
+        return res.status(200).json({
+          success: false,
+          errorMessage: "Couldn't find user in database"
+        });
+      }
 
-			return res.status(200).json({
-				success: true,
-				pins
-			})
-		})
-	})
+      let pins = [];
+      if (user.pins && user.pins.length > 0) {
+        user.pins.forEach(pin => {
+          pins.push(pin);
+        });
+      }
 
-	app.get('/api/mypins', (req, res) => {
+      pins.sort((a, b) => {
+        return b.timeStamp - a.timeStamp;
+      });
 
-		UserModel.findOne({ id: req.headers.id }, (err, user) => {
-			if (err) throw err
-			if (!user) {
-				return res.status(200).json({
-					success: false,
-					errorMessage: 'Couldn\'t find user in database'
-				})
-			}
+      return res.status(200).json({
+        success: true,
+        pins
+      });
+    });
+  });
 
-			let pins = []
-			if (user.pins && user.pins.length > 0) {
-				user.pins.forEach((pin) => {
-					pins.push(pin)
-				})
-			}
+  app.post("/api/newpin", (req, res) => {
+    UserModel.findOne({ id: req.body.id }, (err, user) => {
+      if (err) throw err;
+      if (!user) {
+        res.status(200).json({
+          success: false,
+          errorMessage: "Couldn't find user in database"
+        });
+      }
 
-			pins.sort((a, b) => {
-				return b.timeStamp - a.timeStamp
-			})
-			
-			return res.status(200).json({
-				success: true,
-				pins
-			})
+      let pin = {
+        url: req.body.url,
+        description: req.body.description,
+        likes: [],
+        timeStamp: Date.now(),
+        userImg: user.img,
+        userId: user.id
+      };
+      user.pins.push(pin);
+      user.save({ usePushEach: true }, err => {
+        if (err) {
+          console.error(err);
+          res.status(200).json({
+            success: false,
+            errorMessage: "Couldn't save pin"
+          });
+        } else {
+          res.status(200).json({
+            success: true
+          });
+        }
+      });
+    }); // End UserModel.findOne
+  }); // End /api/newpin
 
-		})
-	})
+  app.post("/api/deletepin", (req, res) => {
+    const id = req.headers.id;
+    const timeStamp = req.headers.timestamp;
 
-	app.post('/api/newpin', (req, res) => {
-		
-		UserModel.findOne({ id: req.body.id }, (err, user) => {
-			if (err) throw err
-			if (!user) {
-				res.status(200).json({
-					success: false,
-					errorMessage: 'Couldn\'t find user in database'
-				})
-			}
+    UserModel.findOne({ id: id }, (err, user) => {
+      if (err) throw err;
+      if (!user) {
+        res.status(200).json({
+          success: false,
+          errorMessage: "Couldn't find user in database"
+        });
+      }
 
-			let pin = {
-				url: req.body.url,
-				description: req.body.description,
-				likes: [],
-				timeStamp: Date.now(),
-				userImg: user.img,
-				userId: user.id
-			}
-			user.pins.push(pin)
-			user.save((err) => {
-				if (err) throw err
-			})
+      let indexOfPin = -1;
+      user.pins.forEach((pin, index) => {
+        if (pin.timeStamp === parseInt(timeStamp)) {
+          indexOfPin = index;
+        }
+      });
+      user.pins.splice(indexOfPin, 1);
+      user.save(err => {
+        if (err) throw err;
+      });
+      user.pins.sort((a, b) => {
+        return b.timeStamp - a.timeStamp;
+      });
+      res.status(200).json({
+        success: true,
+        pins: user.pins
+      });
+    }); // End UserModel.findOne
+  }); // End deletepin
 
-			res.status(200).json({
-				success: true
-			})
-		}) // End UserModel.findOne
-	}) // End /api/newpin
+  app.post("/api/addlike", (req, res) => {
+    const id = req.body.id;
+    const timeStamp = req.body.timestamp;
 
-	app.post('/api/deletepin', (req, res) => {
+    UserModel.find({}, (err, users) => {
+      if (err) throw err;
+      if (!users) {
+        res.status(200).json({
+          success: false,
+          errorMessage: "Couldn't access the database"
+        });
+      }
 
-		const id = req.headers.id
-		const timeStamp = req.headers.timestamp
+      let updatedPins = null;
+      let indexOfPin = null;
+      let userId = null;
 
-		UserModel.findOne({ id: id }, (err, user) => {
-			if (err) throw err
-			if (!user) {
-				res.status(200).json({
-					success: false,
-					errorMessage: 'Couldn\'t find user in database'
-				})
-			}
+      users.forEach(user => {
+        user.pins.forEach((pin, index) => {
+          if (pin.timeStamp === parseInt(timeStamp, 10)) {
+            // Found Pin
+            userId = user.id;
+            updatedPins = user.pins;
+            indexOfPin = index;
+          }
+        });
+      });
 
-			let indexOfPin = -1
-			user.pins.forEach((pin, index) => {
-				console.log(typeof pin.timeStamp)
-				console.log('equal to')
-				console.log(typeof timeStamp)
-				if (pin.timeStamp === parseInt(timeStamp)) {
-					console.log('YES THEY ARE EQUAL')
-					console.log(index)
-					indexOfPin = index
-				}
-			})
-			user.pins.splice(indexOfPin, 1)
-			user.save((err) => {
-				if (err) throw err
-			})
-			user.pins.sort((a, b) => {
-				return b.timeStamp - a.timeStamp
-			})
-			res.status(200).json({
-				success: true,
-				pins: user.pins
-			})
-		}) // End UserModel.findOne
-	}) // End deletepin
+      if (!updatedPins) {
+        res.status(200).json({
+          success: false,
+          errorMessage: "Pin not found"
+        });
+      } else {
+        const indexOfLike = updatedPins[indexOfPin].likes.indexOf(id);
+        if (indexOfLike === -1) {
+          updatedPins[indexOfPin].likes.push(id);
+        } else {
+          updatedPins[indexOfPin].likes.splice(indexOfLike, 1);
+        }
 
-	app.post('/api/addlike', (req, res) => {
-
-		const id = req.body.id
-		const timeStamp = req.body.timestamp
-
-		UserModel.find({}, (err, users) => {
-			if (err) throw err
-			if (!users) {
-				res.status(200).json({
-					success: false,
-					errorMessage: 'Couldn\'t access the database'
-				})
-			}
-
-			let updatedPins = null
-			let indexOfPin = null
-			let userId = null
-
-			users.forEach((user) => {
-				user.pins.forEach((pin, index) => {
-					if (pin.timeStamp === parseInt(timeStamp, 10)) {
-						// Found Pin
-						userId = user.id
-						updatedPins = user.pins
-						indexOfPin = index
-					}
-				})
-			})
-
-			if(!updatedPins) {
-				res.status(200).json({
-					success: false,
-					errorMessage: 'Pin not found'
-				})
-			} else {
-				
-				const indexOfLike = updatedPins[indexOfPin].likes.indexOf(id)
-				if (indexOfLike === -1) {
-					updatedPins[indexOfPin].likes.push(id)
-				} else {
-					updatedPins[indexOfPin].likes.splice(indexOfLike, 1)
-				}
-				
-				UserModel.update({ id: userId }, {
-					$set: {
-						pins: updatedPins
-					}
-				}, (err) => {
-					if (err) throw err
-					return res.status(200).json({
-						success: true
-					})
-				})
-			}
-		}) // End UserModel.findOne
-	}) // End deletepin
-}
-
-
-
-
+        UserModel.update(
+          { id: userId },
+          {
+            $set: {
+              pins: updatedPins
+            }
+          },
+          err => {
+            if (err) throw err;
+            return res.status(200).json({
+              success: true
+            });
+          }
+        );
+      }
+    }); // End UserModel.findOne
+  }); // End deletepin
+};
