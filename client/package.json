@@ -6,6 +6,7 @@
     "react-scripts": "0.9.5"
   },
   "dependencies": {
+    "firebase-admin": "^8.2.0",
     "firebaseui": "^2.3.0",
     "material-ui": "^0.19.0",
     "prop-types": "^15.5.10",

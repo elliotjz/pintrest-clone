@@ -1,91 +1,68 @@
-import firebase from 'firebase'
-import twitterConfig from './twitterConfig'
-
+import firebase from "firebase";
+import authConfig from "./authConfig";
 
 function sendUserToServer(result, callback) {
-	
-	const id = result.user.uid
-	const name = result.user.displayName
-	const img = result.user.photoURL
-	let requestData = `id=${id}&name=${name}&img=${img}`
+  console.log("function: sendUserToServer");
+  const id = result.user.uid;
+  const name = result.user.displayName;
+  const img = result.user.photoURL;
+  let requestData = `id=${id}&name=${name}&img=${img}`;
 
-  const xhr = new XMLHttpRequest()
-  xhr.open('post', '/api/createuser')
-  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded')
-  xhr.responseType = 'json'
-  xhr.addEventListener('load', () => {
+  const xhr = new XMLHttpRequest();
+  xhr.open("post", "/api/createuser");
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhr.responseType = "json";
+  xhr.addEventListener("load", () => {
     if (xhr.status === 200) {
-      console.log('success... response 200!')
-      localStorage.setItem('token', result.credential.accessToken)
-      localStorage.setItem('id', result.user.uid)
-			callback({
-				user: result.user
-			})
+      console.log("success... response 200!");
+      localStorage.setItem("token", result.credential.accessToken);
+      localStorage.setItem("id", result.user.uid);
+      callback({
+        user: result.user
+      });
     }
-
-  })
-  xhr.send(requestData)
+  });
+  xhr.send(requestData);
 }
 
+firebase.initializeApp(authConfig);
 
-firebase.initializeApp(twitterConfig)
-
-const twitterProvider = new firebase.auth.TwitterAuthProvider()
-const googleProvider = new firebase.auth.GoogleAuthProvider()
+const googleProvider = new firebase.auth.GoogleAuthProvider();
 
 class Auth {
+  static googleLogin(callback) {
+    firebase
+      .auth()
+      .signInWithPopup(googleProvider)
+      .then(result => {
+        sendUserToServer(result, callback);
+      })
+      .catch(error => {
+        callback({
+          errorMessage: error.code
+        });
+      });
+  }
 
-	static googleLogin(callback) {
-		firebase.auth().signInWithPopup(googleProvider).then((result) => {
-		  
-			sendUserToServer(result, callback)
+  static logout(callback) {
+    firebase
+      .auth()
+      .signOut()
+      .then(function() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("id");
+        callback();
+      })
+      .catch(function(error) {
+        callback();
+      });
+  }
 
-		}).catch((error) => {
-		  
-		  callback({
-		  	errorMessage: error.code
-		  })
-		})
-	}
-
-	static twitterLogin(callback) {
-
-		firebase.auth().signInWithPopup(twitterProvider).then((result) => {
-			
-			sendUserToServer(result, callback)
-
-		}).catch((error) => {
-		  
-		  callback({
-		  	errorMessage: error.code
-		  })
-		})
-	}
-
-	static logout(callback) {
-
-		firebase.auth().signOut().then(function() {
-
-		  localStorage.removeItem('token')
-		  localStorage.removeItem('id')
-		  callback()
-
-		}).catch(function(error) {
-		  callback()
-		})
-	}
-
-	static getUser(callback) {
-		firebase.auth().onAuthStateChanged((user) => {
-			callback(user)
-		})
-
-		
-	}
+  static getUser(callback) {
+    firebase.auth().onAuthStateChanged(user => {
+      callback(user);
+    });
+  }
 }
 
-
-export default Auth
-
-
-
+export default Auth;

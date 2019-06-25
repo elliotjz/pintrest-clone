@@ -1,4 +1,3 @@
-
 module.exports = {
   apiKey: "AIzaSyBdOQY4CwlB8vwLkKRiqiCMW1XigXCTLBQ",
   authDomain: "pintrest-clone.firebaseapp.com",
@@ -6,6 +5,4 @@ module.exports = {
   projectId: "pintrest-clone",
   storageBucket: "pintrest-clone.appspot.com",
   messagingSenderId: "171103975023"
-}
-
-
+};
