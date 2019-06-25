@@ -1,8 +1,28 @@
 const UserModel = require("../models/user");
 const User = require("mongoose").model("User");
+const bodyParser = require("body-parser");
+
+const jsonParser = bodyParser.json();
+
+function getPinsFromUserList(users) {
+  let pins = [];
+  users.forEach(user => {
+    if (user.pins.length > 0) {
+      user.pins.forEach(pin => {
+        pins.push(pin);
+      });
+    }
+  });
+
+  pins.sort((a, b) => {
+    return b.timeStamp - a.timeStamp;
+  });
+
+  return pins;
+}
 
 module.exports = function(app) {
-  app.post("/api/createuser", (req, res) => {
+  app.post("/api/create-user", (req, res) => {
     const userData = {
       id: req.body.id,
       name: (name = req.body.name),
@@ -30,7 +50,7 @@ module.exports = function(app) {
     });
   });
 
-  app.get("/api/allpins", (req, res) => {
+  app.get("/api/all-pins", (req, res) => {
     UserModel.find({}, (err, users) => {
       if (err) throw err;
       if (!users) {
@@ -39,18 +59,7 @@ module.exports = function(app) {
         });
       }
 
-      let pins = [];
-      users.forEach(user => {
-        if (user.pins.length > 0) {
-          user.pins.forEach(pin => {
-            pins.push(pin);
-          });
-        }
-      });
-
-      pins.sort((a, b) => {
-        return b.timeStamp - a.timeStamp;
-      });
+      const pins = getPinsFromUserList(users);
 
       return res.status(200).json({
         success: true,
@@ -59,7 +68,7 @@ module.exports = function(app) {
     });
   });
 
-  app.get("/api/mypins", (req, res) => {
+  app.get("/api/my-pins", (req, res) => {
     UserModel.findOne({ id: req.headers.id }, (err, user) => {
       if (err) throw err;
       if (!user) {
@@ -87,7 +96,7 @@ module.exports = function(app) {
     });
   });
 
-  app.post("/api/newpin", (req, res) => {
+  app.post("/api/new-pin", (req, res) => {
     UserModel.findOne({ id: req.body.id }, (err, user) => {
       if (err) throw err;
       if (!user) {
@@ -122,42 +131,51 @@ module.exports = function(app) {
     }); // End UserModel.findOne
   }); // End /api/newpin
 
-  app.post("/api/deletepin", (req, res) => {
-    const id = req.headers.id;
-    const timeStamp = req.headers.timestamp;
+  app.post("/api/delete-pin", jsonParser, (req, res) => {
+    const { id, timeStamp } = req.body;
 
-    UserModel.findOne({ id: id }, (err, user) => {
+    UserModel.find({}, (err, users) => {
       if (err) throw err;
-      if (!user) {
+      if (!users) {
         res.status(200).json({
           success: false,
           errorMessage: "Couldn't find user in database"
         });
       }
 
-      let indexOfPin = -1;
-      user.pins.forEach((pin, index) => {
-        if (pin.timeStamp === parseInt(timeStamp)) {
-          indexOfPin = index;
+      let updatedPins = null;
+
+      const updatedUsers = users.map(user => {
+        if (user.id === id) {
+          updatedPins = user.pins.filter(
+            pin => pin.timeStamp !== parseInt(timeStamp, 10)
+          );
+          return { ...user, pins: updatedPins };
+        } else {
+          return user;
         }
       });
-      user.pins.splice(indexOfPin, 1);
-      user.save(err => {
+
+      if (!updatedPins) {
+        res.json({
+          success: false,
+          errorMessage: "Couldn't find pin"
+        });
+        return;
+      }
+
+      UserModel.update({ id }, { $set: { pins: updatedPins } }, err => {
         if (err) throw err;
-      });
-      user.pins.sort((a, b) => {
-        return b.timeStamp - a.timeStamp;
-      });
-      res.status(200).json({
-        success: true,
-        pins: user.pins
+        return res.status(200).json({
+          success: true,
+          pins: getPinsFromUserList(updatedUsers)
+        });
       });
     }); // End UserModel.findOne
   }); // End deletepin
 
-  app.post("/api/addlike", (req, res) => {
-    const id = req.body.id;
-    const timeStamp = req.body.timestamp;
+  app.post("/api/add-like", jsonParser, (req, res) => {
+    const { id, timeStamp } = req.body;
 
     UserModel.find({}, (err, users) => {
       if (err) throw err;
@@ -168,49 +186,55 @@ module.exports = function(app) {
         });
       }
 
-      let updatedPins = null;
-      let indexOfPin = null;
-      let userId = null;
+      let ownerOfPin;
 
-      users.forEach(user => {
-        user.pins.forEach((pin, index) => {
+      const updatedUsers = users.map(user => {
+        let userOwnsPin = false;
+        user.pins.map((pin, index) => {
           if (pin.timeStamp === parseInt(timeStamp, 10)) {
             // Found Pin
-            userId = user.id;
-            updatedPins = user.pins;
-            indexOfPin = index;
+            userOwnsPin = true;
+
+            // Add or remove the like
+            const indexOfLike = pin.likes.indexOf(id);
+            if (indexOfLike === -1) {
+              // Add the like
+              pin.likes.push(id);
+            } else {
+              // Remove the like
+              pin.likes.splice(indexOfLike, 1);
+            }
           }
+          return pin;
         });
+
+        if (userOwnsPin) ownerOfPin = user;
+
+        return user;
       });
 
-      if (!updatedPins) {
-        res.status(200).json({
-          success: false,
-          errorMessage: "Pin not found"
-        });
-      } else {
-        const indexOfLike = updatedPins[indexOfPin].likes.indexOf(id);
-        if (indexOfLike === -1) {
-          updatedPins[indexOfPin].likes.push(id);
-        } else {
-          updatedPins[indexOfPin].likes.splice(indexOfLike, 1);
-        }
-
+      if (ownerOfPin) {
         UserModel.update(
-          { id: userId },
+          { id: ownerOfPin.id },
           {
             $set: {
-              pins: updatedPins
+              pins: ownerOfPin.pins
             }
           },
           err => {
             if (err) throw err;
             return res.status(200).json({
-              success: true
+              success: true,
+              pins: getPinsFromUserList(updatedUsers)
             });
           }
         );
+      } else {
+        res.status(200).json({
+          success: false,
+          errorMessage: "Pin not found"
+        });
       }
     }); // End UserModel.findOne
-  }); // End deletepin
+  }); // End addLike
 };

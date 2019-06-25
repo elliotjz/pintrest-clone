@@ -18,61 +18,81 @@ const style = {
   margin: "5px"
 };
 
-const Pin = ({ pinData, deleteBtn, likeBtn, userLoggedIn, filterUser }) => (
-  <Card className="tile" style={style}>
-    <CardMedia>
-      <img
-        src={pinData.url}
-        alt={pinData.description}
-        onError={event => {
-          event.target.onerror = "";
-          event.target.src = "https://i.imgur.com/Zoufmfl.jpg";
-          return true;
-        }}
-      />
-    </CardMedia>
+class Pin extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false
+    };
+  }
 
-    <div className="pin-description">
-      <CardText style={{ color: "#fff" }}>{pinData.description}</CardText>
-    </div>
-    <div className="pin-actions">
-      <img
-        src={pinData.userImg}
-        alt="user thumbnail"
-        onClick={() => {
-          filterUser(pinData.userId);
-        }}
-      />
+  handleLikeBtn = timeStamp => {
+    this.props.updateLikedPin(timeStamp);
+  };
 
-      {deleteBtn && (
-        <IconButton
-          touch={true}
-          onClick={() => {
-            deleteBtn(pinData.timeStamp);
-          }}
-        >
-          <Delete color={red300} hoverColor={red500} />
-        </IconButton>
-      )}
-      {userLoggedIn && (
-        <div className="like-container">
-          <IconButton
-            touch={true}
-            onClick={() => {
-              likeBtn(pinData.timeStamp);
+  render() {
+    const { pinData, userId, filterUser } = this.props;
+    const userOwnsPin = userId === pinData.userId;
+    const userIsLoggedIn = userId !== null;
+
+    return (
+      <Card className="tile" style={style}>
+        <CardMedia>
+          <img
+            src={pinData.url}
+            alt={pinData.description}
+            onError={event => {
+              event.target.onerror = "";
+              event.target.src = "https://i.imgur.com/Zoufmfl.jpg";
+              return true;
             }}
-          >
-            {pinData.likes.indexOf(localStorage.getItem("id")) === -1 ? (
-              <Like color={grey100} hoverColor={blue200} />
-            ) : (
-              <Like color={blue500} />
-            )}
-          </IconButton>
-          <p>{pinData.likes.length}</p>
+          />
+        </CardMedia>
+
+        <div className="pin-description">
+          <CardText style={{ color: "#fff" }}>{pinData.description}</CardText>
         </div>
-      )}
-    </div>
-  </Card>
-);
+        <div className="pin-actions">
+          <img
+            src={pinData.userImg}
+            alt="user thumbnail"
+            onClick={() => {
+              filterUser(pinData.userId);
+            }}
+          />
+
+          {userOwnsPin && (
+            <IconButton
+              touch={true}
+              onClick={() => {
+                this.props.deletePin(pinData.timeStamp);
+              }}
+            >
+              <Delete color={red300} hoverColor={red500} />
+            </IconButton>
+          )}
+
+          {userIsLoggedIn && (
+            <div className="like-container">
+              <IconButton
+                touch={true}
+                onClick={() => {
+                  this.handleLikeBtn(pinData.timeStamp);
+                }}
+              >
+                {pinData.likes.indexOf(localStorage.getItem("id")) === -1 ? (
+                  <Like color={grey100} hoverColor={blue200} />
+                ) : (
+                  <Like color={blue500} />
+                )}
+              </IconButton>
+              <p>{pinData.likes.length}</p>
+            </div>
+          )}
+        </div>
+      </Card>
+    );
+  }
+}
 
 export default Pin;

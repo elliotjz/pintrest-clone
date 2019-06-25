@@ -9,7 +9,7 @@ function sendUserToServer(result, callback) {
   let requestData = `id=${id}&name=${name}&img=${img}`;
 
   const xhr = new XMLHttpRequest();
-  xhr.open("post", "/api/createuser");
+  xhr.open("post", "/api/create-user");
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xhr.responseType = "json";
   xhr.addEventListener("load", () => {
