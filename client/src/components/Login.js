@@ -1,31 +1,35 @@
 import React from "react";
-import RaisedButton from "material-ui/RaisedButton";
-import PropTypes from "prop-types";
+import Button from "@material-ui/core/Button";
+import { withStyles } from "@material-ui/core/styles";
+import { CircularProgress } from "@material-ui/core";
 
-class Login extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>Login</h1>
-        <form onSubmit={this.props.googleLogin}>
-          <RaisedButton
-            label="Login with Google"
-            type="submit"
-            primary
-            className="login-btn"
-          />
-        </form>
-
-        {this.props.errorMessage && (
-          <p style={{ color: "red" }}>Error: {this.props.errorMessage}</p>
-        )}
-      </div>
-    );
+const styles = {
+  btn: {
+    marginBottom: "40px"
   }
-}
-
-Login.PropTypes = {
-  loginBtnAction: PropTypes.func.isRequired
 };
 
-export default Login;
+const Login = ({ googleLogin, errorMessage, loading, classes }) => {
+  return (
+    <div>
+      <h1 className={classes.title}>Login</h1>
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <form onSubmit={googleLogin}>
+          <Button
+            variant="contained"
+            type="submit"
+            color="primary"
+          >
+            Login with Google
+          </Button>
+        </form>
+      )}
+
+      {errorMessage && <p style={{ color: "red" }}>Error: {errorMessage}</p>}
+    </div>
+  );
+};
+
+export default withStyles(styles)(Login);

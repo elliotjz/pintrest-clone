@@ -96,8 +96,9 @@ module.exports = function(app) {
     });
   });
 
-  app.post("/api/new-pin", (req, res) => {
-    UserModel.findOne({ id: req.body.id }, (err, user) => {
+  app.post("/api/new-pin", jsonParser, (req, res) => {
+    const { id, url, description } = req.body;
+    UserModel.findOne({ id }, (err, user) => {
       if (err) throw err;
       if (!user) {
         res.status(200).json({
@@ -107,8 +108,8 @@ module.exports = function(app) {
       }
 
       let pin = {
-        url: req.body.url,
-        description: req.body.description,
+        url,
+        description,
         likes: [],
         timeStamp: Date.now(),
         userImg: user.img,

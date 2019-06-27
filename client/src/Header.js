@@ -1,17 +1,15 @@
-import React from 'react'
-import AppBar from 'material-ui/AppBar'
-import Menu from './components/Menu'
-
+import React from "react";
+import Menu from "./components/Menu";
+import { AppBar, Toolbar } from "@material-ui/core";
 
 const Header = () => (
   <div>
-    <AppBar
-      title='Pintrest Clone'
-      iconElementRight={<Menu/>}
-      showMenuIconButton={false}
-      id='app-bar'
-    />
+    <AppBar position="static" color="secondary">
+      <Toolbar>
+        <Menu />
+      </Toolbar>
+    </AppBar>
   </div>
-)
+);
 
-export default Header
+export default Header;

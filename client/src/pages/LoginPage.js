@@ -6,33 +6,39 @@ class LoginPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      errorMessage: null
+      errorMessage: null,
+      loading: false
     };
     this.googleLogin = this.googleLogin.bind(this);
   }
 
   googleLogin(event) {
     event.preventDefault();
+    this.setState({
+      errorMessage: null,
+      loading: true
+    });
     Auth.googleLogin(loginResult => {
       if (loginResult.user) {
-        this.setState({
-          user: loginResult.user
-        });
         window.location.reload();
       } else {
         this.setState({
-          errorMessage: loginResult.errorMessage
+          errorMessage: loginResult.errorMessage,
+          loading: false
         });
       }
     });
   }
 
   render() {
+    const { errorMessage, loading } = this.state;
+
     return (
       <div className="page">
         <Login
           googleLogin={this.googleLogin}
-          errorMessage={this.state.errorMessage}
+          errorMessage={errorMessage}
+          loading={loading}
         />
       </div>
     );

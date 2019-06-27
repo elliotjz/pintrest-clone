@@ -1,21 +1,24 @@
 import React from "react";
-import { Card, CardMedia, CardText } from "material-ui/Card";
-import IconButton from "material-ui/IconButton";
-import Delete from "material-ui/svg-icons/action/delete";
-import Like from "material-ui/svg-icons/action/thumb-up";
 import {
-  blue200,
-  blue500,
-  red300,
-  red500,
-  grey100,
-  grey800
-} from "material-ui/styles/colors";
+  Card,
+  CardMedia,
+  CardContent,
+  IconButton,
+  Typography
+} from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+import { Delete, ThumbUp } from "@material-ui/icons";
+import { Link } from "react-router-dom";
 
-const style = {
-  backgroundColor: grey800,
-  padding: "5px",
-  margin: "5px"
+const styles = {
+  container: {
+    backgroundColor: "#444",
+    padding: "5px",
+    margin: "5px",
+    maxWidth: "280px"
+  },
+  cardText: { color: "#eee" },
+  card: {}
 };
 
 class Pin extends React.Component {
@@ -31,59 +34,52 @@ class Pin extends React.Component {
   };
 
   render() {
-    const { pinData, userId, filterUser } = this.props;
+    const { pinData, userId, classes } = this.props;
+
     const userOwnsPin = userId === pinData.userId;
     const userIsLoggedIn = userId !== null;
 
     return (
-      <Card className="tile" style={style}>
-        <CardMedia>
-          <img
-            src={pinData.url}
-            alt={pinData.description}
-            onError={event => {
-              event.target.onerror = "";
-              event.target.src = "https://i.imgur.com/Zoufmfl.jpg";
-              return true;
-            }}
-          />
-        </CardMedia>
-
-        <div className="pin-description">
-          <CardText style={{ color: "#fff" }}>{pinData.description}</CardText>
-        </div>
+      <Card className={classes.container}>
+        <CardMedia
+          image={pinData.url}
+          title={pinData.description}
+          alt={pinData.description}
+          component="img"
+        />
+        <CardContent>
+          <Typography variant="h5" className={classes.cardText}>
+            {pinData.description}
+          </Typography>
+        </CardContent>
         <div className="pin-actions">
-          <img
-            src={pinData.userImg}
-            alt="user thumbnail"
-            onClick={() => {
-              filterUser(pinData.userId);
-            }}
-          />
+          <Link to={`/?uid=${pinData.userId}`}>
+            <img src={pinData.userImg} alt="user thumbnail" />
+          </Link>
 
           {userOwnsPin && (
             <IconButton
-              touch={true}
+              aria-label="Delete"
               onClick={() => {
                 this.props.deletePin(pinData.timeStamp);
               }}
             >
-              <Delete color={red300} hoverColor={red500} />
+              <Delete color="error" />
             </IconButton>
           )}
 
           {userIsLoggedIn && (
             <div className="like-container">
               <IconButton
-                touch={true}
+                aria-label="Like"
                 onClick={() => {
                   this.handleLikeBtn(pinData.timeStamp);
                 }}
               >
                 {pinData.likes.indexOf(localStorage.getItem("id")) === -1 ? (
-                  <Like color={grey100} hoverColor={blue200} />
+                  <ThumbUp color="primary" />
                 ) : (
-                  <Like color={blue500} />
+                  <ThumbUp color="primary" />
                 )}
               </IconButton>
               <p>{pinData.likes.length}</p>
@@ -95,4 +91,4 @@ class Pin extends React.Component {
   }
 }
 
-export default Pin;
+export default withStyles(styles)(Pin);
