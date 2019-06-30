@@ -7,7 +7,6 @@ import {
   TextField,
   withStyles
 } from "@material-ui/core";
-import colors from "../colors";
 
 const styles = {
   button: {
@@ -39,7 +38,7 @@ class NewPinForm extends React.Component {
     let urlError = "";
     let descriptionError = "";
 
-    const urlEx = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+    const urlEx = /[-a-zA-Z0-9@:%_+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_+.~#?&//=]*)?/gi;
     const urlRegEx = new RegExp(urlEx);
     if (!url.match(urlRegEx)) {
       urlError = "Please enter a valid URL";
