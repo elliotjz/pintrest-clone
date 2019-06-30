@@ -1,7 +1,22 @@
 import React from "react";
-import { Card, CardTitle, CardText } from "@material-ui/core/Card";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
+import {
+  CardContent,
+  Typography,
+  Card,
+  Button,
+  TextField,
+  withStyles
+} from "@material-ui/core";
+import colors from "../colors";
+
+const styles = {
+  button: {
+    marginTop: "20px"
+  },
+  errorContainer: {
+    marginTop: "20px"
+  }
+};
 
 class NewPinForm extends React.Component {
   constructor(props) {
@@ -9,7 +24,8 @@ class NewPinForm extends React.Component {
     this.state = {
       url: "",
       description: "",
-      errorMessage: "",
+      urlError: "",
+      descriptionError: "",
       loading: false
     };
   }
@@ -20,15 +36,25 @@ class NewPinForm extends React.Component {
   handleSubmit = e => {
     e.preventDefault();
     const { url, description } = this.state;
-    if (url === "") {
-      this.setState({
-        errorMessage: "Please enter a url"
-      });
-    } else if (description === "") {
-      this.setState({
-        errorMessage: "Please enter a description"
-      });
-    } else {
+    let urlError = "";
+    let descriptionError = "";
+
+    const urlEx = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+    const urlRegEx = new RegExp(urlEx);
+    if (!url.match(urlRegEx)) {
+      urlError = "Please enter a valid URL";
+    }
+
+    if (description === "") {
+      descriptionError = "Please enter a description";
+    }
+
+    this.setState({
+      urlError,
+      descriptionError
+    });
+
+    if (urlError === "" && descriptionError === "") {
       this.sendNewPinToServer(url, description);
     }
   };
@@ -73,41 +99,67 @@ class NewPinForm extends React.Component {
   };
 
   render() {
-    const { closeForm } = this.props;
+    const { closeForm, classes } = this.props;
 
-    const { description, url, errorMessage, loading } = this.state;
+    const {
+      description,
+      url,
+      urlError,
+      descriptionError,
+      loading
+    } = this.state;
 
     return (
       <div id="screen" onClick={closeForm}>
         <Card id="new-pin-form" onClick={this.formClick}>
-          <CardTitle title="Create New Pin" />
-          <form onSubmit={this.handleSubmit}>
-            <TextField
-              floatingLabelText="Picture URL"
-              name="url"
-              onChange={this.formChange}
-              value={url}
-            />
-            <TextField
-              floatingLabelText="Description"
-              name="description"
-              onChange={this.formChange}
-              value={description}
-            />
-            {errorMessage !== "" && (
-              <CardText className="error-text">{errorMessage}</CardText>
-            )}
-            <Button
-              variant="contained"
-              disabled={loading}
-              label={loading ? "Creating..." : "Create"}
-              type="submit"
-            />
-          </form>
+          <CardContent>
+            <Typography variant="h5">Create New Pin</Typography>
+            <form onSubmit={this.handleSubmit}>
+              <TextField
+                error={urlError !== ""}
+                label="Picture URL"
+                name="url"
+                onChange={this.formChange}
+                value={url}
+                margin="normal"
+              />
+              <TextField
+                error={descriptionError !== ""}
+                label="Description"
+                name="description"
+                onChange={this.formChange}
+                value={description}
+                margin="normal"
+              />
+              <div className={classes.errorContainer}>
+                {urlError !== "" && (
+                  <Typography color="error" variant="body1">
+                    {urlError}
+                  </Typography>
+                )}
+                {descriptionError !== "" && (
+                  <Typography color="error" variant="body1">
+                    {descriptionError}
+                  </Typography>
+                )}
+              </div>
+              <div>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  disabled={loading}
+                  type="submit"
+                  className={classes.button}
+                >
+                  {loading ? "Creating..." : "Create"}
+                </Button>
+              </div>
+            </form>
+          </CardContent>
         </Card>
       </div>
     );
   }
 }
 
-export default NewPinForm;
+export default withStyles(styles)(NewPinForm);
