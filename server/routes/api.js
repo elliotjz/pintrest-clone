@@ -151,7 +151,9 @@ module.exports = function(app) {
           updatedPins = user.pins.filter(
             pin => pin.timeStamp !== parseInt(timeStamp, 10)
           );
-          return { ...user, pins: updatedPins };
+          const newUser = user;
+          newUser.pins = updatedPins;
+          return newUser;
         } else {
           return user;
         }
