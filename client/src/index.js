@@ -15,6 +15,12 @@ const theme = createMuiTheme({
     },
     secondary: {
       main: colors.secondary
+    },
+    error: {
+      main: colors.error
+    },
+    action: {
+      active: colors.action
     }
   }
 });

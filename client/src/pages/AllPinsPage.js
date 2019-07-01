@@ -1,12 +1,26 @@
 import React from "react";
-import { Link, CircularProgress } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-
+import {
+  CircularProgress,
+  withStyles,
+  Typography,
+  Button
+} from "@material-ui/core";
 import Masonry from "react-masonry-component";
+import { Link } from "react-router-dom";
 
 import NewPinForm from "../components/NewPinForm";
 import Auth from "../config/Auth";
 import Pin from "../components/Pin";
+import colors from "../colors";
+
+const styles = {
+  container: {
+    marginBottom: "30px"
+  },
+  marginTopBottom: {
+    margin: "20px auto"
+  }
+};
 
 class AllPinsPage extends React.Component {
   constructor(props) {
@@ -15,9 +29,8 @@ class AllPinsPage extends React.Component {
       pins: [],
       loading: true,
       errorMessage: "",
-      newPinErrorMessage: "",
       firebaseUser: null,
-      style: {},
+      masonryDivStyle: {},
       newPinFormOpen: false
     };
   }
@@ -28,7 +41,7 @@ class AllPinsPage extends React.Component {
     });
   };
 
-  resizeGallery() {
+  resizeGallery = () => {
     const windowWidth = window.innerWidth;
     let galleryWidth = "300px";
     if (windowWidth >= 1200) {
@@ -39,43 +52,50 @@ class AllPinsPage extends React.Component {
       galleryWidth = "600px";
     }
     this.setState({
-      style: {
+      masonryDivStyle: {
         margin: "auto",
         width: galleryWidth
       }
     });
-  }
+  };
 
   updateLikedPin = async timeStamp => {
     const { firebaseUser } = this.state;
     const data = { id: firebaseUser.uid, timeStamp };
 
-    const res = await fetch("api/add-like", {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-    const resJson = await res.json();
-    this.setState({ pins: resJson.pins });
+    try {
+      const res = await fetch("api/add-like", {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+      const resJson = await res.json();
+      this.setState({ pins: resJson.pins });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   deletePin = async timeStamp => {
     const { firebaseUser } = this.state;
     const data = { id: firebaseUser.uid, timeStamp };
-
-    const res = await fetch("api/delete-pin", {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
-    const resJson = await res.json();
-    this.setState({ pins: resJson.pins });
+    try {
+      const res = await fetch("api/delete-pin", {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+      const resJson = await res.json();
+      this.setState({ pins: resJson.pins });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   pinSubmittedCallback = () => {
@@ -86,17 +106,19 @@ class AllPinsPage extends React.Component {
   };
 
   getAllPins = async () => {
-    const res = await fetch("/api/all-pins");
-    const { pins } = await res.json();
-    this.setState({
-      pins,
-      loading: false
-    });
-
-    this.resizeGallery();
-    window.addEventListener("resize", () => {
-      this.resizeGallery();
-    });
+    try {
+      const res = await fetch("/api/all-pins");
+      const { pins } = await res.json();
+      this.setState({
+        pins,
+        loading: false
+      });
+    } catch (e) {
+      this.setState({
+        errorMessage: "Unable to get pins",
+        loading: false
+      });
+    }
   };
 
   async componentDidMount() {
@@ -107,6 +129,10 @@ class AllPinsPage extends React.Component {
     });
 
     this.getAllPins();
+    this.resizeGallery();
+    window.addEventListener("resize", () => {
+      this.resizeGallery();
+    });
   }
 
   componentWillUnmount() {
@@ -116,14 +142,19 @@ class AllPinsPage extends React.Component {
   }
 
   render() {
-    var urlParams = new URLSearchParams(location.search);
-    let pinData = urlParams.has("uid")
+    const urlParams = new URLSearchParams(location.search);
+
+    const urlHasUid = urlParams.has("uid");
+
+    const { classes } = this.props;
+    let pinData = urlHasUid
       ? this.state.pins.filter(pin => {
           return pin.userId === urlParams.get("uid");
         })
       : this.state.pins;
 
     const userId = this.state.firebaseUser ? this.state.firebaseUser.uid : null;
+    const myPins = urlHasUid && urlParams.get("uid") === userId;
 
     let childElements = this.state.pins
       ? pinData.map((pin, index) => {
@@ -134,6 +165,7 @@ class AllPinsPage extends React.Component {
                 userId={userId}
                 deletePin={this.deletePin}
                 updateLikedPin={this.updateLikedPin}
+                resizeGallery={this.resizeGallery}
               />
             </div>
           );
@@ -142,30 +174,40 @@ class AllPinsPage extends React.Component {
 
     return (
       <div className="page">
-        <h1>All Pins</h1>
+        <Typography variant="h3">{myPins ? "My Pins" : "All Pins"}</Typography>
 
         {this.state.loading ? (
           <CircularProgress size={40} thickness={4} />
         ) : (
-          <div>
+          <div className={classes.container}>
             {this.state.errorMessage && (
-              <p style={{ color: "red" }}>{this.state.errorMessage}</p>
+              <p style={{ color: colors.error }}>{this.state.errorMessage}</p>
             )}
 
-            <Button variant="contained" onClick={this.toggleNewPinForm}>
-              New Pin
-            </Button>
-
-            {this.state.filterUser && (
-              <Text variant="body2">
-                Filtering by {this.state.filterUser}.{" "}
-                <Link onclick={this.backToAll}>Back to all.</Link>
-              </Text>
+            {userId && (
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={this.toggleNewPinForm}
+                className={classes.marginTopBottom}
+              >
+                New Pin
+              </Button>
             )}
 
-            <div />
+            {urlHasUid && !myPins && (
+              <div>
+                <Link to="/">
+                  <Button color="primary">Back To All</Button>
+                </Link>
+                <Typography className={classes.marginTopBottom} variant="body1">
+                  Filtered results:
+                </Typography>
+              </div>
+            )}
+
             {this.state.pins && this.state.pins.length !== 0 ? (
-              <div style={this.state.style}>
+              <div style={this.state.masonryDivStyle}>
                 <Masonry className="my-gallery-class">{childElements}</Masonry>
               </div>
             ) : null}
@@ -185,4 +227,4 @@ class AllPinsPage extends React.Component {
   }
 }
 
-export default AllPinsPage;
+export default withStyles(styles)(AllPinsPage);

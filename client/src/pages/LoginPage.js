@@ -1,12 +1,26 @@
 import React from "react";
-import Login from "../components/Login";
+import {
+  Button,
+  Typography,
+  CircularProgress,
+  withStyles
+} from "@material-ui/core";
 import Auth from "../config/Auth";
+
+const styles = {
+  btn: {
+    margin: "30px auto"
+  },
+  progress: {
+    margin: "30px auto"
+  }
+};
 
 class LoginPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      errorMessage: null,
+      errorMessage: "",
       loading: false
     };
     this.googleLogin = this.googleLogin.bind(this);
@@ -15,7 +29,7 @@ class LoginPage extends React.Component {
   googleLogin(event) {
     event.preventDefault();
     this.setState({
-      errorMessage: null,
+      errorMessage: "",
       loading: true
     });
     Auth.googleLogin(loginResult => {
@@ -31,18 +45,34 @@ class LoginPage extends React.Component {
   }
 
   render() {
+    const { classes } = this.props;
     const { errorMessage, loading } = this.state;
 
     return (
       <div className="page">
-        <Login
-          googleLogin={this.googleLogin}
-          errorMessage={errorMessage}
-          loading={loading}
-        />
+        <Typography variant="h3">Login</Typography>
+        {loading ? (
+          <CircularProgress className={classes.progress} />
+        ) : (
+          <form onSubmit={this.googleLogin}>
+            <Button
+              variant="contained"
+              type="submit"
+              color="primary"
+              className={classes.btn}
+            >
+              Login with Google
+            </Button>
+          </form>
+        )}
+        {errorMessage !== "" && (
+          <Typography variant="body1" color="error">
+            {errorMessage}
+          </Typography>
+        )}
       </div>
     );
   }
 }
 
-export default LoginPage;
+export default withStyles(styles)(LoginPage);

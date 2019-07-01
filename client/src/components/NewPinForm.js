@@ -64,27 +64,33 @@ class NewPinForm extends React.Component {
     });
     const { userId } = this.props;
     const pinData = { id: userId, url, description };
-
-    const res = await fetch("/api/new-pin", {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(pinData)
-    });
-    const resJson = await res.json();
-    if (resJson.success) {
-      this.setState({
-        url: "",
-        description: "",
-        errorMessage: "",
-        loading: false
+    try {
+      const res = await fetch("/api/new-pin", {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(pinData)
       });
-      this.props.pinSubmittedCallback();
-    } else {
+      const resJson = await res.json();
+      if (resJson.success) {
+        this.setState({
+          url: "",
+          description: "",
+          errorMessage: "",
+          loading: false
+        });
+        this.props.pinSubmittedCallback();
+      } else {
+        this.setState({
+          errorMessage: resJson.errorMessage,
+          loading: false
+        });
+      }
+    } catch (e) {
       this.setState({
-        errorMessage: resJson.errorMessage,
+        errorMessage: "Unable to create new pin",
         loading: false
       });
     }

@@ -1,24 +1,31 @@
 import React from "react";
-import {
-  Card,
-  CardMedia,
-  CardContent,
-  IconButton,
-  Typography
-} from "@material-ui/core";
+import { Card, CardContent, IconButton, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { Delete, ThumbUp } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 
+import colors from "../colors";
+
 const styles = {
   container: {
-    backgroundColor: "#444",
+    backgroundColor: colors.white,
     padding: "5px",
     margin: "5px",
     maxWidth: "280px"
   },
-  cardText: { color: "#eee" },
-  card: {}
+  cardText: { color: colors.black },
+  pinThumb: {
+    color: colors.black,
+    "&:hover": {
+      color: colors.action
+    }
+  },
+  likedPinThumb: {
+    color: colors.action
+  },
+  image: {
+    width: "100%"
+  }
 };
 
 class Pin extends React.Component {
@@ -34,19 +41,29 @@ class Pin extends React.Component {
   };
 
   render() {
-    const { pinData, userId, classes } = this.props;
+    const { pinData, userId, resizeGallery, classes } = this.props;
 
     const userOwnsPin = userId === pinData.userId;
     const userIsLoggedIn = userId !== null;
 
+    const userLikesPin =
+      pinData.likes.indexOf(localStorage.getItem("id")) !== -1;
+
     return (
       <Card className={classes.container}>
-        <CardMedia
-          image={pinData.url}
+        <img
+          src={pinData.url}
           title={pinData.description}
           alt={pinData.description}
-          component="img"
+          className={classes.image}
+          onError={event => {
+            event.target.onerror = "";
+            event.target.src = "https://i.imgur.com/Zoufmfl.jpg";
+            resizeGallery();
+            return true;
+          }}
         />
+
         <CardContent>
           <Typography variant="h5" className={classes.cardText}>
             {pinData.description}
@@ -76,13 +93,19 @@ class Pin extends React.Component {
                   this.handleLikeBtn(pinData.timeStamp);
                 }}
               >
-                {pinData.likes.indexOf(localStorage.getItem("id")) === -1 ? (
-                  <ThumbUp color="primary" />
+                {userLikesPin ? (
+                  <ThumbUp color="action" className={classes.likedPinThumb} />
                 ) : (
-                  <ThumbUp color="primary" />
+                  <ThumbUp color="secondary" className={classes.pinThumb} />
                 )}
               </IconButton>
-              <p>{pinData.likes.length}</p>
+              <p
+                className={
+                  userLikesPin ? classes.likedPinThumb : classes.pinThumb
+                }
+              >
+                {pinData.likes.length}
+              </p>
             </div>
           )}
         </div>
