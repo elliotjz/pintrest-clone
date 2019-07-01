@@ -2,7 +2,6 @@ import firebase from "firebase";
 import authConfig from "./authConfig";
 
 function sendUserToServer(result, callback) {
-  console.log("function: sendUserToServer");
   const id = result.user.uid;
   const name = result.user.displayName;
   const img = result.user.photoURL;
@@ -28,12 +27,27 @@ function sendUserToServer(result, callback) {
 firebase.initializeApp(authConfig);
 
 const googleProvider = new firebase.auth.GoogleAuthProvider();
+const githubProvider = new firebase.auth.GithubAuthProvider();
 
 class Auth {
   static googleLogin(callback) {
     firebase
       .auth()
       .signInWithPopup(googleProvider)
+      .then(result => {
+        sendUserToServer(result, callback);
+      })
+      .catch(error => {
+        callback({
+          errorMessage: error.code
+        });
+      });
+  }
+
+  static githubLogin(callback) {
+    firebase
+      .auth()
+      .signInWithPopup(githubProvider)
       .then(result => {
         sendUserToServer(result, callback);
       })

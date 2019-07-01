@@ -9,10 +9,14 @@ import Auth from "../config/Auth";
 
 const styles = {
   btn: {
-    margin: "30px auto"
+    marginTop: "30px"
   },
   progress: {
     margin: "30px auto"
+  },
+  buttonContainer: {
+    margin: "0 auto",
+    width: "250px"
   }
 };
 
@@ -23,10 +27,9 @@ class LoginPage extends React.Component {
       errorMessage: "",
       loading: false
     };
-    this.googleLogin = this.googleLogin.bind(this);
   }
 
-  googleLogin(event) {
+  googleLogin = event => {
     event.preventDefault();
     this.setState({
       errorMessage: "",
@@ -42,7 +45,25 @@ class LoginPage extends React.Component {
         });
       }
     });
-  }
+  };
+
+  githubLogin = event => {
+    event.preventDefault();
+    this.setState({
+      errorMessage: "",
+      loading: true
+    });
+    Auth.githubLogin(loginResult => {
+      if (loginResult.user) {
+        window.location.reload();
+      } else {
+        this.setState({
+          errorMessage: loginResult.errorMessage,
+          loading: false
+        });
+      }
+    });
+  };
 
   render() {
     const { classes } = this.props;
@@ -54,16 +75,30 @@ class LoginPage extends React.Component {
         {loading ? (
           <CircularProgress className={classes.progress} />
         ) : (
-          <form onSubmit={this.googleLogin}>
-            <Button
-              variant="contained"
-              type="submit"
-              color="primary"
-              className={classes.btn}
-            >
-              Login with Google
-            </Button>
-          </form>
+          <div>
+            <div className={classes.buttonContainer}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.btn}
+                onClick={this.googleLogin}
+                fullWidth
+              >
+                Login with Google
+              </Button>
+            </div>
+            <div className={classes.buttonContainer}>
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.btn}
+                onClick={this.githubLogin}
+                fullWidth
+              >
+                Login with Github
+              </Button>
+            </div>
+          </div>
         )}
         {errorMessage !== "" && (
           <Typography variant="body1" color="error">
