@@ -61,8 +61,30 @@ class AllPinsPage extends React.Component {
 
   updateLikedPin = async timeStamp => {
     const { firebaseUser } = this.state;
-    const data = { id: firebaseUser.uid, timeStamp };
+    const { uid: id } = firebaseUser;
+    const data = { id, timeStamp };
 
+    // Update the UI before calling the database
+    const { pins } = this.state;
+    const updatedPins = pins.map(pin => {
+      if (pin.timeStamp === timeStamp) {
+        const indexOfLike = pin.likes.indexOf(id);
+        if (indexOfLike === -1) {
+          // Add the like
+          pin.likes.push(id);
+        } else {
+          // Remove the like
+          pin.likes.splice(indexOfLike, 1);
+        }
+      }
+      return pin;
+    });
+    this.setState({
+      pins: updatedPins,
+      errorMessage: ""
+    });
+
+    // Update database
     try {
       const res = await fetch("api/add-like", {
         method: "post",
@@ -73,7 +95,20 @@ class AllPinsPage extends React.Component {
         body: JSON.stringify(data)
       });
       const resJson = await res.json();
-      this.setState({ pins: resJson.pins });
+      if (!resJson.success) {
+        this.setState({
+          errorMessage: "Error adding like to pin"
+        });
+      } else {
+        const { pins } = this.state;
+        const updatedPins = pins.map(pin => {
+          return pin.timeStamp === timeStamp ? resJson.pin : pin;
+        });
+        this.setState({
+          pins: updatedPins,
+          errorMessage: ""
+        });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -92,9 +127,15 @@ class AllPinsPage extends React.Component {
         body: JSON.stringify(data)
       });
       const resJson = await res.json();
-      this.setState({ pins: resJson.pins });
+      this.setState({
+        pins: resJson.pins,
+        errorMessage: ""
+      });
     } catch (e) {
       console.error(e);
+      this.setState({
+        errorMessage: "Error deleting pin"
+      });
     }
   };
 
@@ -111,7 +152,8 @@ class AllPinsPage extends React.Component {
       const { pins } = await res.json();
       this.setState({
         pins,
-        loading: false
+        loading: false,
+        errorMessage: ""
       });
     } catch (e) {
       this.setState({
@@ -210,7 +252,11 @@ class AllPinsPage extends React.Component {
               <div style={this.state.masonryDivStyle}>
                 <Masonry className="my-gallery-class">{childElements}</Masonry>
               </div>
-            ) : null}
+            ) : (
+              <Typography variant="body1">
+                No Pins to show. Try adding a pin.
+              </Typography>
+            )}
 
             {this.state.newPinFormOpen && (
               <NewPinForm
