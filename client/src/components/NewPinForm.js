@@ -127,6 +127,7 @@ class NewPinForm extends React.Component {
                 onChange={this.formChange}
                 value={url}
                 margin="normal"
+                fullWidth
               />
               <TextField
                 error={descriptionError !== ""}
@@ -135,6 +136,7 @@ class NewPinForm extends React.Component {
                 onChange={this.formChange}
                 value={description}
                 margin="normal"
+                fullWidth
               />
               <div className={classes.errorContainer}>
                 {urlError !== "" && (
