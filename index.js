@@ -4,7 +4,6 @@ const express = require("express");
 const path = require("path");
 const passport = require("passport");
 const session = require("express-session");
-const Strategy = require("passport-twitter").Strategy;
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const apiRoutes = require("./server/routes/api");
